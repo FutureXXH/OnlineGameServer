@@ -133,15 +133,15 @@ void ProcessIO(LPVOID lpParam)
             }
             else
             {
-                SERVERPRINT_INFO << "完成端口失败 可能连接已经断开" << endl;
+                SERVERPRINT_INFO << "完成端口失败 可能是因为相关连接已经断开" << endl;
             }
             return ;
         }
 
-        // 说明客户端已经退出
+        // 客户端退出
         if (BytesTransferred == 0)
         {
-            cout << "closing socket" << csocket << endl;
+            SERVERPRINT_INFO << "客户端退出" << csocket << endl;
             IOCPSERVER::deleteclient(*ClientMap->at(csocket));
             delete PerIoData;
            
@@ -149,7 +149,8 @@ void ProcessIO(LPVOID lpParam)
         }
         if (BytesTransferred == sizeof(DATA))
         {
-            cout << csocket << "发送过来的消息头：" << PerIoData->data.head << endl;
+       
+
             ClientMap->at(csocket)->response(BytesTransferred, PerIoData->data);
         }
        

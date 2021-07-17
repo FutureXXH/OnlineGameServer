@@ -24,7 +24,7 @@ public:
 	string ip;
 	SOCKET sock;
 	sockaddr_in caddr;
-	thread* threadp;
+	
 	int playerid;
 	double starttime, endtime;
 	LPPER_IO_OPERATION_DATA Data;

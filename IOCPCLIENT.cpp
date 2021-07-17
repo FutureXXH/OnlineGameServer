@@ -12,7 +12,7 @@ IOCPClient::IOCPClient(SOCKET tempsock)
 {
     ip = "";
     sock = tempsock;
-    threadp = nullptr;
+ 
     playerid = -1;
     starttime = clock() / CLOCKS_PER_SEC;
     endtime = clock() / CLOCKS_PER_SEC;
@@ -22,11 +22,7 @@ IOCPClient::IOCPClient(SOCKET tempsock)
 IOCPClient::~IOCPClient()
 {
     SERVERPRINT_INFO << "正在删除客户端socket相关信息" << inet_ntoa(caddr.sin_addr) << endl;
-    if (threadp != nullptr)
-    {
-        delete threadp;
-
-    }
+  
     if (Data != nullptr)
     {
         delete Data;
