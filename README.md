@@ -12,6 +12,6 @@ WINDOWS IOCP多线程unity联机服务端
 
 数据传输加密
 
-更好的代码格式
+更好的代码风格
 
 MYSQL支持
