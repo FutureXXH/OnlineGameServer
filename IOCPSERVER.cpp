@@ -3,7 +3,7 @@
 std::mutex mtx;
 void heart()
 {
-
+    SERVERPRINT_INFO << "服务器运行中" << endl;
     for (auto iter = ClientMap->begin(); iter != ClientMap->end(); ++iter)
     {
         iter->second->endtime = clock() / CLOCKS_PER_SEC;
@@ -25,7 +25,7 @@ void heart()
             break;
         }
     }
-    Sleep(1000);
+    Sleep(2000);
     heart();
 }
 
@@ -130,13 +130,14 @@ void ProcessIO(LPVOID lpParam)
 
                 delete PerIoData;
         
-                continue;
+                
             }
             else
             {
                 SERVERPRINT_INFO << "完成端口失败 可能是因为相关连接已经断开" << endl;
             }
-            return ;
+            continue;
+        
         }
 
         // 客户端退出
