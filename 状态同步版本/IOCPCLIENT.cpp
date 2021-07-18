@@ -147,7 +147,7 @@ void IOCPClient::send20002(int size, DATA data)
 
     }
 
-}
+} 
 
 void IOCPClient::position(int size, DATA data)
 {
