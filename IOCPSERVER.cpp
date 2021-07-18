@@ -51,7 +51,8 @@ void IOCPSERVER::deleteclient(IOCPClient& client)
     {
         SERVERPRINT_INFO << "正在删除客户端socket" << inet_ntoa(client.caddr.sin_addr) << endl;
         ClientMap->erase(client.sock);
-        closesocket(client.sock);
+        shutdown(client.sock,2);
+  
         delete& client;
     }
     else
