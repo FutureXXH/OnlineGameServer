@@ -1,5 +1,5 @@
 # UNITYSERVER2
-WINDOWS IOCP多线程unity联机服务端
+WINDOWS IOCP多线程unity联机服务端（完成度30%）
 
 
 采用是UNITYSERVER1 的改进版  增加了iocp改善了一连接一线程的情况，从而可以大大提高并发量
@@ -8,6 +8,8 @@ WINDOWS IOCP多线程unity联机服务端
 
 未来更新：
 
+ 帧同步
+ 
 安全码：验证是否是客户端发出来的合法数据
 
 数据传输加密
