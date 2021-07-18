@@ -7,14 +7,16 @@ WINDOWS IOCP多线程unity联机服务端（完成度30%）
 对应unity相关工程文件 https://plastichub.unity.cn/future_xxh/ONLINEGAME
 
 当前完成：
+
 服务器基础框架（多线程，IOCP模型）
 
 简单数据处理与转发
 
+简单功能实现：聊天，客户端心跳包检测，玩家退出，最简单的位置同步
 
 未来更新：
 
- 帧同步
+帧同步
  
 安全码：验证是否是客户端发出来的合法数据
 
