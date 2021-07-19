@@ -7,7 +7,7 @@ WINDOWS IOCP多线程unity联机服务端（完成度30%）
 对应unity相关工程文件 https://plastichub.unity.cn/future_xxh/ONLINEGAME
 
 
-分主要支持状态同步与帧同步的版本
+状态同步和帧同步版本以自定义版本为基础开发
 
 
 
