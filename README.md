@@ -1,5 +1,5 @@
 # UNITYSERVER2
-WINDOWS IOCP多线程unity联机服务端（完成度30%）
+WINDOWS IOCP多线程unity联机服务端（完成度50%）
 ===========================================================================
 
 采用是UNITYSERVER1 的改进版  增加了iocp改善了一连接一线程的情况，从而可以大大提高并发量
@@ -7,7 +7,7 @@ WINDOWS IOCP多线程unity联机服务端（完成度30%）
 对应unity相关工程文件 https://plastichub.unity.cn/future_xxh/ONLINEGAME
 
 
-状态同步和帧同步版本以自定义版本为基础开发
+状态同步版本以自定义版本为基础开发
 
 
 
