@@ -47,7 +47,8 @@ IOCPSERVER::IOCPSERVER()
 
 void IOCPSERVER::deleteclient(IOCPClient& client)
 {
-    if (ClientMap->count(client.sock) > 0)
+    mtx.lock();
+    if (ClientMap->find(client.sock)  != ClientMap->end())
     {
         SERVERPRINT_INFO << "正在删除客户端socket" << inet_ntoa(client.caddr.sin_addr) << endl;
         ClientMap->erase(client.sock);
@@ -60,7 +61,7 @@ void IOCPSERVER::deleteclient(IOCPClient& client)
         SERVERPRINT_INFO << "重复删除" << endl;
     }
  
-
+    mtx.unlock();
 }
 
 bool IOCPSERVER::InitWinsock()
@@ -120,15 +121,15 @@ void ProcessIO(LPVOID lpParam)
     
     while (true)
     {
-
-        if (0 == GetQueuedCompletionStatus(CompletionPort, &BytesTransferred, (LPDWORD)&csocket, (LPOVERLAPPED*)&PerIoData, INFINITE))
+        //INFINITE
+        if (0 == GetQueuedCompletionStatus(CompletionPort, &BytesTransferred, (LPDWORD)&csocket, (LPOVERLAPPED*)&PerIoData, 10000))
         {
             if ((GetLastError() == WAIT_TIMEOUT) || (GetLastError() == ERROR_NETNAME_DELETED))
             {
-                SERVERPRINT_INFO << "等待超时" << endl;
-                IOCPSERVER::deleteclient(*ClientMap->at(csocket));
+                //SERVERPRINT_INFO << "等待超时" << endl;
+                //IOCPSERVER::deleteclient(*(ClientMap->at(csocket)));
 
-                delete PerIoData;
+                //delete PerIoData;
         
                 
             }
@@ -144,7 +145,7 @@ void ProcessIO(LPVOID lpParam)
         if (BytesTransferred == 0)
         {
             SERVERPRINT_INFO << "客户端退出" << csocket << endl;
-            IOCPSERVER::deleteclient(*ClientMap->at(csocket));
+            IOCPSERVER::deleteclient(*(ClientMap->at(csocket)));
             delete PerIoData;
            
             continue;
@@ -173,6 +174,7 @@ void ProcessIO(LPVOID lpParam)
 
 void IOCPSERVER::StartIOCPSERVER()
 {
+
     ClientMap = new unordered_map<SOCKET, IOCPClient*>();
     IOCPClient::initmap(ClientMap);
 
@@ -198,6 +200,7 @@ void IOCPSERVER::StartIOCPSERVER()
 
     sockaddr_in tempcaddr;
     int len = sizeof(tempcaddr);
+    
     while (true)
     {
         SERVERPRINT_INFO << "等待客户端接入" << endl;
@@ -231,9 +234,17 @@ void IOCPSERVER::StartIOCPSERVER()
         WSARecv(sClient, &PerIoData->DataBuf, 1, &dwRecv, &Flags, &PerIoData->Overlapped, NULL);
     }
 
+
+    
+
+
+
+
     DWORD dwByteTrans;
 
     PostQueuedCompletionStatus(CompletionPort, dwByteTrans, 0, 0);  
 
     closesocket(this->serversocket);
+
+    system("pause");
 }
