@@ -28,8 +28,6 @@ IOCPClient::~IOCPClient()
         delete Data;
     }
 
-
-
 }
 
 void IOCPClient::response(int size, DATA data)
@@ -53,7 +51,7 @@ void IOCPClient::response(int size, DATA data)
         SERVERPRINT_INFO << "心跳包接收" << endl;
         break;
     case LOCATION:
-        position(size, data);
+        send20001(size, data);
         SERVERPRINT_INFO << "位置同步" << endl;
         break;
     case CLOSE_CONNECT:
@@ -77,18 +75,16 @@ void IOCPClient::response(int size, DATA data)
 void IOCPClient::initmap(unordered_map<SOCKET, IOCPClient*>* tempClientMap)
 {
     ClientMap = tempClientMap;
-
-
 }
 
-void IOCPClient::send10000(DATA data)
+void IOCPClient::send10000(DATA& data)
 {
     this->starttime = clock() / CLOCKS_PER_SEC;
     this->playerid = data.ID;
 
 }
 
-void IOCPClient::send20000(int size, DATA data)
+void IOCPClient::send20000(int& size, DATA& data)
 {
     for (auto iter = ClientMap->begin(); iter != ClientMap->end(); ++iter)
     {
@@ -120,7 +116,7 @@ void IOCPClient::send20000(int size, DATA data)
 
 }
 
-void IOCPClient::send20002(int size, DATA data)
+void IOCPClient::send20002(int& size, DATA& data)
 {
     SERVERPRINT_INFO << "正在处理聊天 " << endl;
 
@@ -149,7 +145,7 @@ void IOCPClient::send20002(int size, DATA data)
 
 }
 
-void IOCPClient::position(int size, DATA data)
+void IOCPClient::send20001(int &size, DATA &data)
 {
 
     for (auto iter = ClientMap->begin(); iter != ClientMap->end(); ++iter)

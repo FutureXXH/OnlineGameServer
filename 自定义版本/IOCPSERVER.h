@@ -36,10 +36,10 @@ public:
 
 
 	static void initmap(unordered_map<SOCKET, IOCPClient*>* tempClientMap);
-	void send10000(DATA data);
-	void send20000(int size, DATA data);
-	void send20002(int size, DATA data);
-	void position(int size, DATA data);
+	void send10000(DATA &data);
+	void send20000(int &size, DATA& data);
+	void send20002(int &size, DATA &data);
+	void send20001(int& size, DATA& data);
 
 };
 

@@ -18,14 +18,15 @@ void heart()
                 data.ID = iter->second->playerid;
                 data.state = 1;
                 SERVERPRINT_INFO << "向其他玩家发送离开信息" << endl;
-                iter->second->send20000(sizeof(data), data);
+                int size = sizeof(data);
+                iter->second->send20000(size, data);
             }
 
             IOCPSERVER::deleteclient(*(iter->second));
             break;
         }
     }
-    Sleep(2000);
+    Sleep(3000);
     heart();
 }
 
@@ -51,6 +52,7 @@ void IOCPSERVER::deleteclient(IOCPClient& client)
     if (ClientMap->find(client.sock)  != ClientMap->end())
     {
         SERVERPRINT_INFO << "正在删除客户端socket" << inet_ntoa(client.caddr.sin_addr) << endl;
+        //delete ClientMap->at(client.sock);
         ClientMap->erase(client.sock);
         shutdown(client.sock,2);
   
@@ -210,11 +212,11 @@ void IOCPSERVER::StartIOCPSERVER()
         SERVERPRINT_INFO << "Socket " << sClient << "连接进来" << endl;
 
 
-       
+        mtx.lock();
         ClientMap->emplace(sClient, new IOCPClient(sClient));
         ClientMap->at(sClient)->sock = sClient;
         ClientMap->at(sClient)->caddr = tempcaddr;
-    
+        mtx.unlock();
 
 
         SERVERPRINT_INFO << "当前连接数量 " << ClientMap->size() << endl;
