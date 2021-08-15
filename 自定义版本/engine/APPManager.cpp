@@ -9,7 +9,7 @@ bool APPManager::InitManager(Concurrency::concurrent_queue<task*>* tasks , TCPSE
     __tasks = tasks;
     Ptcpserver = ptcpserver;
  
-    semapthore = CreateSemaphore(NULL, 0, 5000, L"ServiceThread");
+    semapthore = CreateSemaphore(NULL, 0, 5000, L"ServiceThread"); //创建信号量
 
     if (threadnum <= 0)
     {
@@ -34,7 +34,7 @@ void APPManager::ProcessService(HANDLE semapthore)
     
     while (true)
     {
-        WaitForSingleObject(semapthore, INFINITE);
+        WaitForSingleObject(semapthore, INFINITE); //等待信号量资源
         
         if (__tasks->unsafe_size() > 0)
         {
@@ -68,7 +68,7 @@ void APPManager::Response(task& Task)
         r10000(Task.clent->sock);
         break;
     case TEST:
-        SERVERPRINT_INFO << "测试数据" << endl;
+        r10001(Task.clent->sock);
         break;
     case NEWPLAYER:
         r10002(Task.clent->sock);
@@ -88,6 +88,22 @@ void APPManager::r10000(SOCKET& playersock)
         Playerlist[playersock]->starttime  = clock() / CLOCKS_PER_SEC;
     }
 }
+
+void APPManager::r10001(SOCKET& playersock)
+{
+    {
+        shared_lock<shared_mutex> lock(sharedmutex); // 设置读锁
+        if (Playerlist[playersock]->islogin)
+        {
+            SERVERPRINT_INFO << "测试数据:已登录" << endl;
+        }
+        else
+        {
+            SERVERPRINT_INFO << "测试数据:未登录" << endl;
+        }
+    }
+}
+
 
 void APPManager::r10002(SOCKET& playersock) //新连接玩家，创建业务层数据
 {

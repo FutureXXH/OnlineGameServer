@@ -2,8 +2,8 @@
 
 
 
-shared_mutex sharemutex;
-HANDLE semapthore = CreateSemaphore(NULL, 0, 5000, L"ServiceThread");
+shared_mutex sharemutex;//创建锁
+HANDLE semapthore = CreateSemaphore(NULL, 0, 5000, L"ServiceThread");//创建信号量
 
 
 TCPSERVER::TCPSERVER()
@@ -234,13 +234,13 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
                 
             }
             CreateIoCompletionPort((HANDLE)PerIoData->sock, CompletionPort, (DWORD)PerIoData->sock, 0);
-            //传递给业务层创建新玩家数据信息
+            //传递给业务层创建新玩家数据信息===========
             task* createnewplayertask = new task();
             createnewplayertask->clent = ClientMap->at(PerIoData->sock);
             createnewplayertask->Head = 10002;
             __tasks->push(createnewplayertask);
             ReleaseSemaphore(semapthore, 1, NULL);
-
+            //=========================================
 
 
             // 传递接收事件
@@ -304,7 +304,7 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
                 memcpy(&head, PerIoData->data, 4);
                 memcpy(&size, PerIoData->data + 4, 4);
 
-                if (head < 0 || head > 100000 || size < 0 || size > 1016)
+                if (head < 0 || head > 100000 || size < 0 || size > DATA_BUFSIZE)
                 {
                     //非法数据 不进行处理
                     continue;
