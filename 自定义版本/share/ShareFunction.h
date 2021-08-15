@@ -8,7 +8,7 @@
 #include <string>
 namespace share
 {
-	extern int LoadServerXML(const char* filename, const char* filepath, int& saveport, int& safecode);
+	extern int LoadServerXML(const char* filename, const char* filepath, int& saveport, int& safecode, int& IOthreadnum, int& Servicethreadnum);
 	extern bool InitData();
 
 }

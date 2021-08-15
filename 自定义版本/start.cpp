@@ -27,15 +27,16 @@ int main()
 	APPManager* appmanager = new APPManager();
 
 
-	share::LoadServerXML("server_config.xml", FileExePath, server->port,server->SafeCode);
-	SERVERPRINT_INFO << endl << "=========================="
-		<< endl << "配置文件读取结果："
-		<< "端口:" << server->port << "安全码:" << server->SafeCode << endl
-	    << "==========================" << endl;
+	share::LoadServerXML("server_config.xml", FileExePath, server->port,server->SafeCode, server->threadnum,appmanager->threadnum);
+	SERVERPRINT_INFO << endl 
+		             << "==========================" << endl
+		             << "配置文件读取结果："
+		             << "端口:" << server->port << "安全码:" << server->SafeCode << endl
+	                 << "==========================" << endl;
 
 	__tasks = new Concurrency::concurrent_queue<task*>();//任务队列 
 
-	appmanager->InitManager(2, __tasks);
+	appmanager->InitManager( __tasks);
 
 	server->InitWinsock();
 	server->InitWinSERVER(server->port);

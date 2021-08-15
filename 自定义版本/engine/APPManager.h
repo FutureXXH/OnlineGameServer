@@ -18,12 +18,15 @@ using namespace std;
 
 class APPManager
 {
+public:
+
 	int SafeCode;
+	int threadnum = 0;
 	
 	//unordered_map<SOCKET, TCPClient*>* ClientMap;
 
 public:
-	bool InitManager(int num, Concurrency::concurrent_queue<task*> * tasks);
+	bool InitManager( Concurrency::concurrent_queue<task*> * tasks);
 	void ProcessService();
 	void Response(task & Task);
 

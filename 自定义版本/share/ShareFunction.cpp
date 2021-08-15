@@ -2,7 +2,7 @@
 
 namespace share
 {
-	int LoadServerXML(const char* filename, const char* filepath, int &  saveport,int & safecode)
+	int LoadServerXML(const char* filename, const char* filepath, int &  saveport,int & safecode,int & IOthreadnum, int& Servicethreadnum)
 	{
 		std::string loadfilepath(filepath);
 		loadfilepath += filename;
@@ -28,6 +28,8 @@ namespace share
 
 		saveport = atoi(xmlNode->Attribute("Port"));
 		safecode = atoi(xmlNode->Attribute("SafeCode"));
+		IOthreadnum = atoi(xmlNode->Attribute("IOthreadnum"));
+		Servicethreadnum = atoi(xmlNode->Attribute("Servicethreadnum"));
 
 
 		SERVERPRINT_INFO << "加载服务器配置文件成功" << std::endl;

@@ -1,17 +1,23 @@
 #include "APPManager.h"
 
-bool APPManager::InitManager(int num,Concurrency::concurrent_queue<task*>* tasks)
+bool APPManager::InitManager(Concurrency::concurrent_queue<task*>* tasks)
 {
 
     __tasks = tasks;
     
+
+    if (threadnum <= 0)
+    {
+        threadnum = 2;
+    }
+   
     //task::__tasks = new Concurrency::concurrent_queue<task*>();
-    for (int i = 0; i < num; i++)
+    for (int i = 0; i < threadnum; i++)
     {
         thread* threadp = new thread(&APPManager::ProcessService, this);
 
     }
-    SERVERPRINT_INFO << "创建" << num << "个业务处理线程" << endl;
+    SERVERPRINT_INFO << "创建" << threadnum << "个业务处理线程" << endl;
 
 
 
@@ -29,10 +35,12 @@ void APPManager::ProcessService()
             task* temptask;
             if (!__tasks->try_pop(temptask))
             {
+                SERVERPRINT_WARNING << "空任务" << endl;
                 continue;
             }
             if (temptask == nullptr)
             {
+                SERVERPRINT_WARNING << "空任务指针" << endl;
                 continue;
             }
 

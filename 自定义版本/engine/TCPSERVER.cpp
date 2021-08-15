@@ -113,25 +113,27 @@ void TCPSERVER::StartIOCPSERVER(Concurrency::concurrent_queue<task*>* tasks)
     GetSystemInfo(&SystemInfo);
 
     
-    if (SystemInfo.dwNumberOfProcessors >= 6)
+    if (threadnum > 0)
     {
+    }
+    else if (SystemInfo.dwNumberOfProcessors >= 6)
+    {
+        threadnum = SystemInfo.dwNumberOfProcessors * 2 - 6;
         //如果处理器较多 分配多点给业务线程
-        for (int i = 0; i < SystemInfo.dwNumberOfProcessors * 2 - 6; i++)
-        {
-            thread* threadp = new thread(&TCPSERVER::ProcessIO, this, CompletionPort);
-
-        }
-        SERVERPRINT_INFO << "创建" << SystemInfo.dwNumberOfProcessors * 2 - 6 << "个IO线程" << endl;
     }
     else //
     {
-        for (int i = 0; i < SystemInfo.dwNumberOfProcessors; i++)
-        {
-            thread* threadp = new thread(&TCPSERVER::ProcessIO, this, CompletionPort);
-
-        }
-        SERVERPRINT_INFO << "创建" << SystemInfo.dwNumberOfProcessors << "个IO线程" << endl;
+        threadnum = SystemInfo.dwNumberOfProcessors;
     }
+
+ 
+    for (int i = 0; i < threadnum; i++)
+    {
+        thread* threadp = new thread(&TCPSERVER::ProcessIO, this, CompletionPort);
+
+    }
+
+    SERVERPRINT_INFO << "创建" << threadnum << "个IO线程" << endl;
 
  
 

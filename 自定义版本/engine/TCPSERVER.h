@@ -25,6 +25,7 @@ class TCPSERVER
 public:
 	 int port;
      int SafeCode;
+	 int threadnum = 0;
 	SOCKET ServerSocket;
 	sockaddr_in Server_adr;
 	HANDLE CompletionPort;
