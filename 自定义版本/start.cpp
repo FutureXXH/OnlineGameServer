@@ -14,6 +14,8 @@ using namespace std;
 
 int main()
 {
+	
+
 	char FileExePath[128];
 	memset(FileExePath, 0, 128);
 
@@ -36,7 +38,7 @@ int main()
 
 	__tasks = new Concurrency::concurrent_queue<task*>();//任务队列 
 
-	appmanager->InitManager( __tasks);
+	appmanager->InitManager( __tasks, server);
 
 	server->InitWinsock();
 	server->InitWinSERVER(server->port);

@@ -9,8 +9,8 @@ TCPClient::TCPClient(SOCKET Socket, sockaddr_in addr)
 	ip = inet_ntoa(caddr.sin_addr);
 	memset(cbuff, 0, bufsize);
 
-	starttime = clock() / CLOCKS_PER_SEC;
-	endtime = clock() / CLOCKS_PER_SEC;
+	//starttime = clock() / CLOCKS_PER_SEC;
+	//endtime = clock() / CLOCKS_PER_SEC;
 
 }
 

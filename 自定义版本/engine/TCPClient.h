@@ -8,6 +8,10 @@
 #include "IDefine.h"
 #include <string>
 using namespace std;
+
+//这里对网络层连接数据进行定义
+
+
 class TCPClient
 {
 public:
@@ -16,7 +20,7 @@ public:
 	sockaddr_in caddr;
 	const int bufsize = 1024;
 	char cbuff[1024];
-	double starttime, endtime;
+	
 
 
 	TCPClient(SOCKET Socket, sockaddr_in addr);

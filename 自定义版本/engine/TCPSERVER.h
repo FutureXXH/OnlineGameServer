@@ -17,7 +17,7 @@
 #include <mswsock.h>
 
 
-static unordered_map<SOCKET, TCPClient*>* ClientMap = new unordered_map<SOCKET, TCPClient*>();
+//static unordered_map<SOCKET, TCPClient*>* ClientMap = new unordered_map<SOCKET, TCPClient*>();
 
 using namespace std;
 class TCPSERVER
@@ -30,7 +30,7 @@ public:
 	sockaddr_in Server_adr;
 	HANDLE CompletionPort;
 
-
+	unordered_map<SOCKET, TCPClient*>* ClientMap = new unordered_map<SOCKET, TCPClient*>();
 public:
 	TCPSERVER();
 	~TCPSERVER();

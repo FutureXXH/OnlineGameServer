@@ -3,7 +3,7 @@
 
 
 shared_mutex sharemutex;
-
+HANDLE semapthore = CreateSemaphore(NULL, 0, 5000, L"ServiceThread");
 
 
 TCPSERVER::TCPSERVER()
@@ -173,7 +173,7 @@ void TCPSERVER::StartIOCPSERVER(Concurrency::concurrent_queue<task*>* tasks)
     while (true)
     {
         string aa;
-        aa += "当前玩家:";
+        aa += "当前连接数:";
         aa += std::to_string(ClientMap->size());
         aa += " 当前业务任务量";
         aa += std::to_string(__tasks->unsafe_size());
@@ -234,6 +234,14 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
                 
             }
             CreateIoCompletionPort((HANDLE)PerIoData->sock, CompletionPort, (DWORD)PerIoData->sock, 0);
+            //传递给业务层创建新玩家数据信息
+            task* createnewplayertask = new task();
+            createnewplayertask->clent = ClientMap->at(PerIoData->sock);
+            createnewplayertask->Head = 10002;
+            __tasks->push(createnewplayertask);
+            ReleaseSemaphore(semapthore, 1, NULL);
+
+
 
             // 传递接收事件
             
@@ -320,7 +328,7 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
                 temptask->Head = head;
 
                 __tasks->push(temptask);
-         
+                ReleaseSemaphore(semapthore, 1, NULL);
            
 
             //ClientMap->at(csocket)->response(BytesTransferred, PerIoData->data);
