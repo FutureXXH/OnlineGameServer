@@ -14,7 +14,7 @@ WINDOWS IOCP多线程TCP游戏联机服务器
 
 数据进行简单加密传输
 
-自定义数据协议 从而支持各种游戏引擎等（unity UE....）
+可自定义数据协议   
 
 
 ![服务器结构](https://user-images.githubusercontent.com/60800578/129468779-25a470cb-f661-4f9e-bcbe-f0389a8636a8.png)
