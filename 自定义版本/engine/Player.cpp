@@ -12,3 +12,9 @@ Player::Player(SOCKET sock)
 
 
 }
+
+Player::~Player()
+{
+
+	SERVERPRINT_INFO << "已删除玩家业务层数据" << std::endl;
+}

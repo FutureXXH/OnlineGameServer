@@ -12,7 +12,7 @@ public:
 	char Data[1024];
 	TCPClient* clent;
 
-
+	
 	
 };
 

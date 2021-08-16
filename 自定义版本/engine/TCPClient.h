@@ -24,7 +24,7 @@ public:
 
 
 	TCPClient(SOCKET Socket, sockaddr_in addr);
-
+	~TCPClient();
 	int send(const int head, const char* data, const int DataSize, const int SafeCode);
 
 };

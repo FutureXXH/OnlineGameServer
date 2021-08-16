@@ -25,9 +25,9 @@ bool TCPSERVER::DeleteClientSocket(SOCKET ClientSocket)
     if (ClientMap->find(ClientSocket) != ClientMap->end())
     {
         SERVERPRINT_INFO << "正在删除客户端socket" << inet_ntoa((*ClientMap)[ClientSocket]->caddr.sin_addr) << endl;
-        //delete ClientMap->at(client.sock);
+        delete ClientMap->at(ClientSocket);
 
-       ClientMap->erase(ClientSocket);
+        ClientMap->erase(ClientSocket);
         
         shutdown(ClientSocket, 2);
       
@@ -218,7 +218,7 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
 
         }
 
-        SERVERPRINT_INFO << "发现事件" << endl;
+       
         //有客户端连接
         if (csocket == ServerSocket)
         {
@@ -281,7 +281,13 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
         if (BytesTransferred == 0)
         {
             SERVERPRINT_INFO << "客户端退出" << csocket << endl;
-            DeleteClientSocket(csocket);
+            //传递给业务层删除玩家数据信息===========
+            task* deleteplayertask = new task();
+            deleteplayertask->clent = ClientMap->at(csocket);
+            deleteplayertask->Head = 10003;
+            __tasks->push(deleteplayertask);
+            ReleaseSemaphore(semapthore, 1, NULL);
+            //=========================================
             delete PerIoData;
 
             continue;

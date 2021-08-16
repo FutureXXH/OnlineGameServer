@@ -17,7 +17,7 @@ public:
 	double starttime;
 
 	Player(SOCKET sock);
-
+	~Player();
 };
 
 

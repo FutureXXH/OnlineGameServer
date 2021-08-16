@@ -14,6 +14,11 @@ TCPClient::TCPClient(SOCKET Socket, sockaddr_in addr)
 
 }
 
+TCPClient::~TCPClient()
+{
+	SERVERPRINT_INFO << "已删除玩家连接数据" << std::endl;
+}
+
 int TCPClient::send(const int head, const char* data, const int DataSize, const int SafeCode)
 {
 	

@@ -74,11 +74,31 @@ void APPManager::Response(task& Task)
         r10002(Task.clent->sock);
         SERVERPRINT_INFO << "创建新连接玩家数据" << endl;
         break;
-
+    case DELETEPLAYER:
+        r10003(Task.clent->sock);
+        break;
     default:
         break;
     }
 
+}
+
+bool APPManager::DeletePlayer(SOCKET& playersocket)
+{
+    {
+        unique_lock<shared_mutex> lock(sharedmutex); // 设置写锁
+        if (Playerlist.find(playersocket) != Playerlist.end())
+        {
+            SERVERPRINT_INFO << "正在删除服务器玩家数据:" << Playerlist.at(playersocket)->ID << endl;
+            delete Playerlist.at(playersocket);
+            Playerlist.erase(playersocket);
+            return true;
+        }
+
+    }
+
+    return false;
+    
 }
 
 void APPManager::r10000(SOCKET& playersock)
@@ -113,6 +133,16 @@ void APPManager::r10002(SOCKET& playersock) //新连接玩家，创建业务层�
     Playerlist.emplace(playersock, newplayer);
 
     }
+}
+
+void APPManager::r10003(SOCKET& playersock)
+{
+
+       
+        DeletePlayer(playersock);
+        Ptcpserver->DeleteClientSocket(playersock);
+   
+
 }
 
 
