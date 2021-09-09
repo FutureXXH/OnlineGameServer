@@ -3,7 +3,7 @@
  <server
    Port = "6666"
    SafeCode = "888" 
-   IOthreadnum = "0"
-   Servicethreadnum = "0"
+   IOthreadnum = "5"
+   Servicethreadnum = "5"
   />
 </root>

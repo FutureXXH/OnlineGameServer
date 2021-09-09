@@ -64,17 +64,17 @@ void APPManager::Response(task& Task)
 {
     switch (Task.Head)
     {
-    case HEART:
+    case HEART://心跳包接收
         r10000(Task.clent->sock);
         break;
-    case TEST:
+    case TEST://测试
         r10001(Task.clent->sock);
         break;
-    case NEWPLAYER:
+    case NEWPLAYER://创建玩家服务器数据信息
         r10002(Task.clent->sock);
         SERVERPRINT_INFO << "创建新连接玩家数据" << endl;
         break;
-    case DELETEPLAYER:
+    case DELETEPLAYER: //删除玩家服务器数据信息
         r10003(Task.clent->sock);
         break;
     default:
@@ -90,7 +90,7 @@ bool APPManager::DeletePlayer(SOCKET& playersocket)
         if (Playerlist.find(playersocket) != Playerlist.end())
         {
             SERVERPRINT_INFO << "正在删除服务器玩家数据:" << Playerlist.at(playersocket)->ID << endl;
-            delete Playerlist.at(playersocket);
+           
             Playerlist.erase(playersocket);
             return true;
         }
@@ -100,6 +100,7 @@ bool APPManager::DeletePlayer(SOCKET& playersocket)
     return false;
     
 }
+//========================================================
 
 void APPManager::r10000(SOCKET& playersock)
 {

@@ -193,18 +193,12 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
 
     while (true)
     {
-        //INFINITE
         if (0 == GetQueuedCompletionStatus(CompletionPort, &BytesTransferred, (LPDWORD)&csocket, (LPOVERLAPPED*)&PerIoData, 10000))
         {
-            
-           
-            //SERVERPRINT_INFO << "发现事件0" << GetLastError() << endl;
             if ((GetLastError() == WAIT_TIMEOUT) || (GetLastError() == ERROR_NETNAME_DELETED))
             {
                 //SERVERPRINT_INFO << "等待超时" << endl;
                 //IOCPSERVER::deleteclient(*(ClientMap->at(csocket)));
-
-                //delete PerIoData;
             }
             else
             {
@@ -236,7 +230,11 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
             CreateIoCompletionPort((HANDLE)PerIoData->sock, CompletionPort, (DWORD)PerIoData->sock, 0);
             //传递给业务层创建新玩家数据信息===========
             task* createnewplayertask = new task();
-            createnewplayertask->clent = ClientMap->at(PerIoData->sock);
+            // 读锁
+            {
+                shared_lock<shared_mutex> lock(sharemutex);
+                createnewplayertask->clent = ClientMap->at(PerIoData->sock);
+            }
             createnewplayertask->Head = 10002;
             __tasks->push(createnewplayertask);
             ReleaseSemaphore(semapthore, 1, NULL);
@@ -283,7 +281,11 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
             SERVERPRINT_INFO << "客户端退出" << csocket << endl;
             //传递给业务层删除玩家数据信息===========
             task* deleteplayertask = new task();
-            deleteplayertask->clent = ClientMap->at(csocket);
+            // 读锁
+            {
+                shared_lock<shared_mutex> lock(sharemutex);
+                deleteplayertask->clent = ClientMap->at(csocket);
+            }
             deleteplayertask->Head = 10003;
             __tasks->push(deleteplayertask);
             ReleaseSemaphore(semapthore, 1, NULL);
@@ -316,9 +318,9 @@ void TCPSERVER::ProcessIO(LPVOID lpParam)
                     continue;
                 }
                 //对数据信息进行解密
-                for (int i = 8; i < size; i++)
+                for (int i = 0; i < size; i++)
                 {
-                    PerIoData->data[i] ^= SafeCode;
+                    PerIoData->data[8+i] ^= SafeCode;
                 }
                 //将读取数据推入业务处理队列中  不处理业务逻辑
                 task* temptask = new task();
