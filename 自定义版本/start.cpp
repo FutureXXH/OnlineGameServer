@@ -3,7 +3,7 @@
 
 int main()
 {
-
+	SetConsoleOutputCP(65001);
 	app::run();
 
 }

@@ -17,12 +17,12 @@ private:
 public:
 
 	atomic<int> CurOnlinePlayer = 0;
+	int MaxPlayer;
 
 
 
-
-	//插入玩家数据缓存
-	bool InsertPlayerInfo(int id, SOCKET sock, PlayerInfo* AddPlayerInfo);
+	//插入玩家数据缓存 1 成功 -1 冲突 -2 达到最大值失败
+	int InsertPlayerInfo(int id, SOCKET sock, PlayerInfo* AddPlayerInfo);
 
 	//通过ID查询
 	PlayerInfo* ID_Find(int id);
@@ -40,7 +40,8 @@ public:
 	//发送全量数据给DB保存
 	int SaveAllToDB(PlayerInfo* playerinfo);
 
-
+	//初始化玩家管理器
+	int init(int MaxPlayerNum);
 };
 
 

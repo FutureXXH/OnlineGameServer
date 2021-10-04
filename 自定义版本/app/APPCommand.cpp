@@ -31,9 +31,7 @@ namespace app {
 		memset(LoginInfoBuff, 0, 44);
 		memcpy(LoginInfoBuff, task->data, 40);
 		memcpy(LoginInfoBuff+40, (char*)&task->Sock, 4);
-
 		__DBLink->SendDB(1000, 44, LoginInfoBuff);
-
 	}
 
 	void OnLoginSuccess_10001(Task* task)

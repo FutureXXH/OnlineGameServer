@@ -1,0 +1,11 @@
+<?xml version = "1.0" encoding = "GB2312"?>
+<root>
+ <server
+   Port = "6666"
+   SafeCode = "888" 
+   IOthreadnum = "0"
+   Servicethreadnum = "0"
+   MaxConnect = "0"
+   MaxOnlinePlayer = "0"
+  />
+</root>

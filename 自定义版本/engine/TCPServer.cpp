@@ -5,8 +5,18 @@ TcpServer* __TcpServer = nullptr;
 
 bool TcpServer::StartTcpServer(int port)
 {
+    if (port <= 0 || port > 65535)
+    {
+        port = 6666;
+        SERVERPRINT_WARNING << "端口号设置异常，将设置为默认值6666" << endl;
+    }
+    if (maxConnect <= 0)
+    {
+        maxConnect = 1000;
+        SERVERPRINT_WARNING << "最大连接数设置异常，将设置为默认值1000" << endl;
+    }
+    
 
-    SERVERPRINT_INFO << "正在开启服务器" << std::endl;
     WSADATA wsd;
     if (WSAStartup(MAKEWORD(2, 2), &wsd) != 0)
     {
@@ -23,12 +33,12 @@ bool TcpServer::StartTcpServer(int port)
 
     if (bind(ServerSocket, (struct sockaddr*)&Server_adr, sizeof(Server_adr)) == SOCKET_ERROR)
     {
-        SERVERPRINT_ERROR << "bind error" << std::endl;
+        SERVERPRINT_ERROR << "bind 错误" << std::endl;
         return false;
     }
     if (listen(ServerSocket, 20) == SOCKET_ERROR)
     {
-        SERVERPRINT_ERROR << "listen error" << std::endl;
+        SERVERPRINT_ERROR << "listen 错误" << std::endl;
         return false;
     }
     SERVERPRINT_INFO << "服务器网络初始化完成" << std::endl;
@@ -62,7 +72,12 @@ bool TcpServer::StartTcpServer(int port)
     SYSTEM_INFO SystemInfo;
     GetSystemInfo(&SystemInfo);
     
-    threadnum = 2;
+    if (threadnum <= 0)
+    {
+        SERVERPRINT_WARNING << "当前IO线程设置异常，将设置为默认值2" << std::endl;
+        threadnum = 2;
+    }
+
 
     for (int i = 0; i < threadnum; i++)
     {
@@ -279,8 +294,13 @@ void TcpServer::IOThread(LPVOID lpParam)
          }
         else if (PerIoData->Type == 3)
         {
+        if (BytesTransferred == 0)
+        {
+            SERVERPRINT_ERROR << "与其他服务器连接断开！！" << endl;
+        }
 
-
+        if(BytesTransferred >= 8)
+        { 
         int head = -1;
         int datasize = -1;
         memcpy(&head, PerIoData->data, 4);
@@ -315,8 +335,11 @@ void TcpServer::IOThread(LPVOID lpParam)
         DWORD dwRecv = 0;
         WSARecv(csocket, &PerIoData->DataBuf, 1, &dwRecv, &Flags, &PerIoData->Overlapped, NULL);
         continue;
+        }
 
-         }
+
+
+       }
 
 
     }

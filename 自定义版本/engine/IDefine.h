@@ -1,15 +1,18 @@
 #ifndef __IDEFINE_H
 #define __IDEFINE_H
+
+
 #include <winsock2.h>
 
 #include <windows.h>
+#include "..\share\ConsoleColor.h"
 #include<iostream>
 #include<atomic>
 
 #define NOWTIME(){ SYSTEMTIME sys;GetLocalTime(&sys);std::cout << sys.wHour << ":" << sys.wMinute << ":" << sys.wSecond;}
-#define SERVERPRINT_INFO NOWTIME();std::cout<<"[INFO]:"
-#define SERVERPRINT_WARNING NOWTIME();std::cout<<"[WARNING]:"
-#define SERVERPRINT_ERROR NOWTIME();std::cout<<"[ERROR]:"
+#define SERVERPRINT_INFO NOWTIME();std::cout << green <<"[INFO]" << white << ":"
+#define SERVERPRINT_WARNING NOWTIME();std::cout<< yellow <<"[WARNING]" << white << ":"
+#define SERVERPRINT_ERROR NOWTIME();std::cout  << red<<"[ERROR]" << white << ":"
 #define DATA_BUFSIZE 1024
 
 
