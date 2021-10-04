@@ -44,9 +44,13 @@ void WorkThreadManager::InitWorkThread(int ThreadNum)
 		SERVERPRINT_WARNING << "当前工作业务线程设置异常，将设置为默认值3" << std::endl;
 		WorkThreadNum = 3;
 	}
-	SERVERPRINT_INFO << "正在开启" << ThreadNum << "个工作业务线程" << endl;
+	else
+	{
+		WorkThreadNum = ThreadNum;
+	}
+	SERVERPRINT_INFO << "正在开启" << WorkThreadNum << "个工作业务线程" << endl;
 
-	for (int i = 1; i <= ThreadNum; i++)
+	for (int i = 1; i <= WorkThreadNum; i++)
 	{
 		//初始化线程信息
 		WorkThread* workthreadp = new WorkThread(1000 * i);
