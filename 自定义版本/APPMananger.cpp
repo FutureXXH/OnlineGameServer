@@ -1,7 +1,7 @@
 #include "APPMananger.h"
 
 
-
+//主线程循环执行
 void update()
 {
     string aa;
@@ -14,6 +14,10 @@ void update()
     system(("title " + aa).c_str());
 
 
+    //心跳包检测
+    //app::HeartCheck();
+    //对玩家数据缓存进行状态检查
+    //__PlayerManager->CheckPlayer();
    
 
 }
@@ -22,6 +26,9 @@ void update()
 
 void app::HeartCheck()
 {
+
+    //连接心跳包检测
+    //如果状态为0 则表示断开  如果玩家已登录 则需要保存玩家数据
     for (int i = 0; i < __TcpServer->ConnectedSockets.size(); i++)
     {
         auto p = __TcpServer->FindTcpClient(__TcpServer->ConnectedSockets[i]);
@@ -30,7 +37,15 @@ void app::HeartCheck()
         switch (p->state)
         {
         case 0:
+        {
+            auto player = __PlayerManager->SOCKET_Find(__TcpServer->ConnectedSockets[i]);
+            if (player != nullptr)
+            {
+                player->Type = 2; //玩家掉线需要保存
+            }
             __TcpServer->CloseSock(__TcpServer->ConnectedSockets[i]);
+        }
+        
             break;
         case 1:
         {
@@ -60,19 +75,21 @@ int app::run()
 
     SERVERPRINT_INFO << "正在启动服务器" << std::endl;
 
+    //初始化任务管理器
+    SERVERPRINT_INFO << "正在初始化任务管理器" << std::endl;
+    __TaskManager = new TaskManager();
+    __TaskManager->init(1000);
+
+
     //初始化服务器网络管理器
     __TcpServer = new TcpServer();
     __TcpServer->threadnum = IOThreadNum;
     __TcpServer->maxConnect = maxConnect;
     if (__TcpServer->StartTcpServer(port))
     {  
-        SERVERPRINT_INFO << "服务器网络初始化完成" << std::endl;
+        SERVERPRINT_INFO << "服务器网络初始化完成（IOCP）" << std::endl;
     }
 
-    //初始化任务管理器
-    SERVERPRINT_INFO << "正在初始化任务管理器" << std::endl;
-    __TaskManager = new TaskManager();
-    __TaskManager->init(1000);
 
     //初始化工作线程管理器
     SERVERPRINT_INFO << "正在初始化工作线程管理器" << std::endl;

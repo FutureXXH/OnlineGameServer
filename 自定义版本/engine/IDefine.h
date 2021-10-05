@@ -29,19 +29,7 @@ typedef struct
 
 }PER_IO_OPERATION_DATA, * LPPER_IO_OPERATION_DATA;
 
-struct PlayerInfo
-{
-	int ID;
-	std::atomic<int> Type = 1; // 0 已断开 1 已连接 2需要保存  3 保存中
-	int TCPIndex;
-	SOCKET sock;
 
-	//===========自定义玩家数据================
-
-
-	//===========================
-
-};
 
 
 

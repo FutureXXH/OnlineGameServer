@@ -5,6 +5,8 @@
 #pragma comment(lib, "ws2_32")
 #pragma warning(disable:4996)
 using namespace std;
+
+//DB服务器连接器
 class DBLink
 {
 public:

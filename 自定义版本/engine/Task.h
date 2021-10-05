@@ -11,7 +11,7 @@ struct Task
 	int Head;
 	int datasize;
 	char* data;
-	unsigned int Sock;
+	SOCKET Sock;
 
 	void Reset();
 };

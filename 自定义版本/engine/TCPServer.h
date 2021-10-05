@@ -30,7 +30,7 @@ public:
 	SOCKET ServerSocket;
 	sockaddr_in Server_adr;
 	HANDLE CompletionPort;
-	mutex TCLinkerMutex;
+	shared_mutex TCLinkerMutex;
 
 
 	HashArray<TcpClientIndex>* TcpClientIndexLinkers;

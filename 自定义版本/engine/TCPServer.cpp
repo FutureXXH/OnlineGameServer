@@ -146,7 +146,7 @@ void TcpServer::IOThread(LPVOID lpParam)
             continue;
 
         }
-
+        // 类型1：外网数据接收  类型2：外内网数据发送 类型3：内网数据接收
         if (PerIoData->Type == 1)
         {
             //处理新连接
@@ -258,6 +258,10 @@ void TcpServer::IOThread(LPVOID lpParam)
 
 
                 Task* task = __TaskManager->GetFreeTask();
+                if (task == nullptr)
+                {
+                    SERVERPRINT_WARNING << "获取任务对象失败，可能任务量已达到最大值" << endl;
+                }
                 task->Head = head;
                 task->datasize = datasize;
                 task->Sock = csocket;
@@ -309,6 +313,10 @@ void TcpServer::IOThread(LPVOID lpParam)
 
 
         Task* task = __TaskManager->GetFreeTask();
+        if (task == nullptr)
+        {
+            SERVERPRINT_WARNING << "获取任务对象失败，可能任务量已达到最大值" << endl;
+        }
         task->Head = head;
         task->datasize = datasize;
         task->Sock = csocket;
@@ -350,7 +358,9 @@ void TcpServer::IOThread(LPVOID lpParam)
 bool TcpServer::CloseSock(SOCKET sock)
 {
     if (sock == SOCKET_ERROR || sock == INVALID_SOCKET)return false;
-    lock_guard<mutex> guard(TCLinkerMutex);
+    unique_lock<shared_mutex> readlock(TCLinkerMutex);
+
+
     SERVERPRINT_INFO << "正在关闭清理socket" << sock << endl;
 
     auto cindex = TcpClientIndexLinkers->at(sock);
@@ -383,7 +393,7 @@ bool TcpServer::CloseSock(SOCKET sock)
 TcpClient* TcpServer::GetFreeTcpClient()
 {
 
-    lock_guard<mutex> guard(TCLinkerMutex);
+    shared_lock<shared_mutex> readlock(TCLinkerMutex);
 
     for (int i = 0; i < TcpClientLinkers->length; i++)
     {
@@ -403,6 +413,8 @@ TcpClient* TcpServer::GetFreeTcpClient()
 
 TcpClientIndex* TcpServer::GetClientIndex(int socket)
 {
+    shared_lock<shared_mutex> readlock(TCLinkerMutex);
+
     if (socket < 0 || socket >= maxSocket) return nullptr;
     TcpClientIndex* c = TcpClientIndexLinkers->at(socket);
 
@@ -412,7 +424,7 @@ TcpClientIndex* TcpServer::GetClientIndex(int socket)
 
 TcpClient* TcpServer::FindTcpClient(SOCKET sock)
 {
-
+    shared_lock<shared_mutex> readlock(TCLinkerMutex);
     auto p = TcpClientIndexLinkers->at(sock);
     if (p == nullptr)return nullptr;
     auto p2 = TcpClientLinkers->at(p->index);
