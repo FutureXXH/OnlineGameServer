@@ -7,13 +7,15 @@ namespace app {
 		switch (task->Head)
 		{
 		case 1:
+
 			SERVERPRINT_INFO << "测试ok!" << endl;
+			OnTest_1(task);
 			break;
 		case 10000:
 			OnLogin_10000(task);
 			break;
 		case 10001:
-			OnLoginSuccess_10001(task);
+			OnLoginState_10001(task);
 			break;
 
 
@@ -34,18 +36,52 @@ namespace app {
 		__DBLink->SendDB(1000, 44, LoginInfoBuff);
 	}
 
-	void OnLoginSuccess_10001(Task* task)
+	void OnLoginState_10001(Task* task)
 	{
+
 		SOCKET playersock = 0;
-		int PlayerID = -1;
+		int PlayerID = -99;
 		memcpy(&PlayerID, task->data, 4);
 		memcpy(&playersock, task->data + 4, 4);
-		SERVERPRINT_INFO << "登录成功" << "ID" << PlayerID  << "Socket" << playersock<< std::endl;
+		if (PlayerID > 0)
+		{
+			SERVERPRINT_INFO << "登录成功" << "ID" << PlayerID << "Socket" << playersock << std::endl;
+		}
+		else
+		{
+			SERVERPRINT_INFO << "登录失败" << "错误代码" << PlayerID << "Socket" << playersock << std::endl;
+			
+		}
+		char backSenndBuff[4];
+		memset(backSenndBuff, 0, 4);
+		memcpy(backSenndBuff, task->data, 4);
+
+
+		auto c = __TcpServer->FindTcpClient(playersock);
+		c->Send(10001, backSenndBuff, 4, true);
+		
 
 	}
 
 
 
+
+	void OnTest_1(Task* task)
+	{
+		char buff[20];
+		memset(buff, 0, 20);
+		memcpy(buff, "Test Success", 12);
+
+		
+		auto p = __TcpServer->FindTcpClient(task->Sock);
+		if (p != nullptr)
+		{
+			p->Send(1, buff, 20, true);
+		}
+
+
+
+	}
 
 
 

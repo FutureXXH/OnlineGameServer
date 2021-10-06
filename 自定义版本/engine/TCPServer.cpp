@@ -182,6 +182,10 @@ void TcpServer::IOThread(LPVOID lpParam)
                 {
 
                     cindex->index = c->ID;
+                    c->sock = csock;
+                    c->caddr = *ClientAddr;
+                    c->state = 1;
+
                     ConnectedSockets.push_back(csock);
                     // 传递接收事件
                     CreateIoCompletionPort((HANDLE)csock, CompletionPort, (DWORD)csock, 0);
@@ -191,7 +195,7 @@ void TcpServer::IOThread(LPVOID lpParam)
                     PerIoData->Type = 1;
                     DWORD Flags = 0;
                     DWORD dwRecv = 0;
-                    WSARecv(csock, &PerIoData->DataBuf, 1, &dwRecv, &Flags, &PerIoData->Overlapped, NULL);
+                    WSARecv(csock, &PerIoData->DataBuf, 1, &dwRecv, &Flags, &PerIoData->Overlapped, NULL);                    
                     //重新new一个 为下面继续传递连接事件做准备
                     PerIoData = new PER_IO_OPERATION_DATA();
 
@@ -237,48 +241,62 @@ void TcpServer::IOThread(LPVOID lpParam)
             //处理数据
             if (BytesTransferred > 0)
             {
-
-                //对头信息进行简单解密
-                for (int i = 0; i < 8; i++)
+        
+                int CurRecvSize = 0;
+                while (CurRecvSize < (int)BytesTransferred)
                 {
-                    PerIoData->data[i] ^= SafeCode;
+
+                    //对头信息进行简单解密
+                    for (int i = CurRecvSize; i < CurRecvSize +8; i++)
+                    {
+                        PerIoData->data[i] ^= SafeCode;
+                    }
+
+                    int head = -1;
+                    int datasize = -1;
+                    memcpy(&head, PerIoData->data+ CurRecvSize, 4);
+                    memcpy(&datasize, PerIoData->data + CurRecvSize + 4, 4);
+                    SERVERPRINT_INFO << "有数据" << CurRecvSize << "|" << BytesTransferred << "|" << head << "|" << datasize << endl;
+                    //数据缺失
+                    if (CurRecvSize + 8 + datasize > BytesTransferred)
+                    {
+                        break;
+                    }
+
+
+                    //对数据进行简单解密
+                    for (int i = CurRecvSize+8; i < CurRecvSize + 8 + datasize; i++)
+                    {
+                        PerIoData->data[i] ^= SafeCode;
+                    }
+
+
+
+                    Task* task = __TaskManager->GetFreeTask();
+                    if (task == nullptr)
+                    {
+                        SERVERPRINT_WARNING << "获取任务对象失败，可能任务量已达到最大值" << endl;
+                    }
+                    task->Head = head;
+                    task->datasize = datasize;
+                    task->Sock = csocket;
+                    if (datasize > 0)
+                    {
+                        char* tempbuff = new char[datasize];
+                        memset(tempbuff, 0, datasize);
+                        memcpy(tempbuff, PerIoData->data + CurRecvSize + 8, datasize);
+                        task->data = tempbuff;
+                    }
+                    else
+                    {
+                        task->data = nullptr;
+                    }
+                    __TaskManager->PushTaskToWork(task);
+
+
+                    CurRecvSize += (8 + datasize);
                 }
-
-                int head = -1;
-                int datasize = -1;
-                memcpy(&head, PerIoData->data, 4);
-                memcpy(&datasize, PerIoData->data + 4, 4);
-
-                //对数据进行简单解密
-                for (int i = 8; i < 8 + datasize; i++)
-                {
-                    PerIoData->data[i] ^= SafeCode;
-                }
-
-
-
-                Task* task = __TaskManager->GetFreeTask();
-                if (task == nullptr)
-                {
-                    SERVERPRINT_WARNING << "获取任务对象失败，可能任务量已达到最大值" << endl;
-                }
-                task->Head = head;
-                task->datasize = datasize;
-                task->Sock = csocket;
-                if (datasize > 0)
-                {
-                    char* tempbuff = new char[datasize];
-                    memset(tempbuff, 0, datasize);
-                    memcpy(tempbuff, PerIoData->data + 8, datasize);
-                    task->data = tempbuff;
-                }
-                else
-                {
-                    task->data = nullptr;
-                }
-                __TaskManager->PushTaskToWork(task);
-
-
+              
                 //继续传递接收事件
                 ZeroMemory(PerIoData, sizeof(PER_IO_OPERATION_DATA));
                 PerIoData->DataBuf.buf = (char*)&(PerIoData->data);
@@ -432,3 +450,6 @@ TcpClient* TcpServer::FindTcpClient(SOCKET sock)
 
     return p2;
 }
+
+
+//=========================================
