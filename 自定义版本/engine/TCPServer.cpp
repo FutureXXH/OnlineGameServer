@@ -276,6 +276,7 @@ void TcpServer::IOThread(LPVOID lpParam)
                     if (task == nullptr)
                     {
                         SERVERPRINT_WARNING << "获取任务对象失败，可能任务量已达到最大值" << endl;
+                        continue;
                     }
                     task->Head = head;
                     task->datasize = datasize;
@@ -334,6 +335,7 @@ void TcpServer::IOThread(LPVOID lpParam)
         if (task == nullptr)
         {
             SERVERPRINT_WARNING << "获取任务对象失败，可能任务量已达到最大值" << endl;
+            continue;
         }
         task->Head = head;
         task->datasize = datasize;

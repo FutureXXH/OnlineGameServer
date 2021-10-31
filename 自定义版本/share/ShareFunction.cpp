@@ -2,7 +2,7 @@
 
 namespace share
 {
-	int LoadServerXML(const char* filename, const char* filepath, int &  saveport,int & safecode,int & IOthreadnum, int& Servicethreadnum,int &MaxConnect, int& MaxOnlinePlayer)
+	int LoadServerXML(const char* filename, const char* filepath, int &  saveport,int & safecode,int & IOthreadnum, int& Servicethreadnum,int &MaxConnect, int& MaxOnlinePlayer, string& DB_IP, int& DB_port)
 	{
 		char FileExePath[128];
 		if (filepath == nullptr)
@@ -44,16 +44,18 @@ namespace share
 		Servicethreadnum = atoi(xmlNode->Attribute("Servicethreadnum"));
 		MaxConnect = atoi(xmlNode->Attribute("MaxConnect"));
 		MaxOnlinePlayer = atoi(xmlNode->Attribute("MaxOnlinePlayer"));
-
-
+		DB_IP = xmlNode->Attribute("DB_IP");
+		DB_port = atoi(xmlNode->Attribute("DB_Port"));
 		SERVERPRINT_INFO << "加载服务器配置文件成功" << std::endl;
 		SERVERPRINT_INFO << "====================================" << std::endl;
 		SERVERPRINT_INFO << "服务器端口：" << saveport << std::endl;
 		SERVERPRINT_INFO << "安全码：" << safecode << std::endl;
 		SERVERPRINT_INFO << "IO线程数：" << IOthreadnum << std::endl;
-		SERVERPRINT_INFO << "业务线程数："<< Servicethreadnum << std::endl;
-		SERVERPRINT_INFO << "最大连接数："<<MaxConnect << std::endl;
-		SERVERPRINT_INFO << "最大在线玩家数："<<MaxOnlinePlayer << std::endl;
+		SERVERPRINT_INFO << "业务线程数：" << Servicethreadnum << std::endl;
+		SERVERPRINT_INFO << "最大连接数：" << MaxConnect << std::endl;
+		SERVERPRINT_INFO << "最大在线玩家数：" << MaxOnlinePlayer << std::endl;
+		SERVERPRINT_INFO << "DB服务器ip：" << DB_IP << std::endl;
+		SERVERPRINT_INFO << "DB服务器端口：" << DB_port << std::endl;
 		SERVERPRINT_INFO << "====================================" << std::endl;
 
 		return 0;

@@ -10,8 +10,8 @@ class HashArray
 public:
 	int length;
 	int size;
-	void* pointer;
-
+	//void* pointer;
+	T* pointer;
 
 	HashArray()
 	{
@@ -26,7 +26,8 @@ public:
 		size = sizeof(T);
 		if (size == 0) return;
 		length = counter;
-		pointer = malloc(size * length);
+		pointer = new T[length];
+		//pointer = malloc(size * length);
 
 
 	}
@@ -36,15 +37,16 @@ public:
 	{
 		if (pointer != nullptr)
 		{
-			free(pointer);
+			//free(pointer);
+			delete[] pointer;
 			pointer = nullptr;
 		}
 	}
 
 	T* at(const int index)
 	{
-		T* temp = (T*)pointer;
-		return &temp[index];
+		//T* temp = (T*)pointer;
+		return &pointer[index];
 	}
 };
 

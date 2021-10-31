@@ -7,5 +7,7 @@
    Servicethreadnum = "0"
    MaxConnect = "0"
    MaxOnlinePlayer = "0"
+   DB_IP = "172.0.0.1"
+   DB_Port = "6667"
   />
 </root>

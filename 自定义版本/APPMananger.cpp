@@ -71,7 +71,9 @@ int app::run()
     int WorkThreadNum = 0;
     int maxConnect = 0;
     int MaxOnlinePlayer = 0;
-    share::LoadServerXML("server_config.xml", nullptr, port, SafeCode, IOThreadNum, WorkThreadNum, maxConnect,MaxOnlinePlayer);
+    string DB_IP;
+    int DB_Port;
+    share::LoadServerXML("server_config.xml", nullptr, port, SafeCode, IOThreadNum, WorkThreadNum, maxConnect,MaxOnlinePlayer, DB_IP, DB_Port);
 
     SERVERPRINT_INFO << "正在启动服务器" << std::endl;
 
@@ -100,7 +102,7 @@ int app::run()
     //初始化DB连接器
     SERVERPRINT_INFO << "正在初始化DB连接器" << std::endl;
     __DBLink = new DBLink();
-    __DBLink->init("10.17.78.88", 6667, __TcpServer->CompletionPort);
+    __DBLink->init(DB_IP.c_str(), DB_Port, __TcpServer->CompletionPort);
     __DBLink->ConnectDB();
 
     //初始化玩家管理器

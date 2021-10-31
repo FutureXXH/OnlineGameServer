@@ -92,7 +92,7 @@ bool TaskManager::PushTaskToPool(Task* TaskP)
 	}
 	
 	TaskP->Reset();
-	TaskPool.try_pop(TaskP);
+	TaskPool.push(TaskP);
 
 
 
