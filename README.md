@@ -31,7 +31,7 @@ WINDOWS IOCP多线程TCP自定义游戏联机服务器框架 V1版 配合DB服�
 
 当前已包含简单的登录 注册功能
 
-配合DB服务器使用https://github.com/xuxinhao666666/DBSERVER
+配合DB服务器使用https://github.com/FutureXXH/DBSERVER
 
 V2版本计划
 =========================================================
