@@ -7,7 +7,8 @@
 
 
 
-
+早期构思图
+![Actor游戏服务器架构思路](https://user-images.githubusercontent.com/60800578/161270995-b96a6d8a-6488-479b-8222-21a9ec12e351.png)
 
 
 
