@@ -5,6 +5,7 @@
 #include "IDefine.h"
 
 using namespace std;
+//线程安全队列
 template<class T>
 class ThreadSafe_Queue
 {

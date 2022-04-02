@@ -12,7 +12,7 @@ class ModuleBase
 {
 private:
 
-
+     //消息队列
 	ThreadSafe_Queue<Message*> MessageQueue;
 	//需要注册的消息  
 	vector<int32> MessageReg;

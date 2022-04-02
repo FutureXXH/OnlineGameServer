@@ -32,20 +32,15 @@ int main()
 	//================================================================
 
 
-	/*int i = 0;
-	auto start = system_clock::now();
-	while (i < 10000)
+    while (true)
 	{
-		i++;
-		Message* temp = new Message(*testm);
-		__ModuleManager->pushDataMessageQueue(temp);
-		
-	}*/
+	   string cmd;
+	   cin >> cmd;
+	}
+	
 
 
-	this_thread::sleep_for(seconds(10000));  
 
-	//cout<< "ִ执行" << i << "次 消耗时间" << duration_cast<milliseconds>(system_clock::now() - start).count() << "毫秒" << endl;
-
+	
 	return 1;
 }

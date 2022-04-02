@@ -15,6 +15,7 @@ using uint32 = unsigned int;
 using uint16 = unsigned short;
 using uint8 = unsigned char;
 
+//消息数据定义
 struct Message
 {
 	int32 MessageID;
