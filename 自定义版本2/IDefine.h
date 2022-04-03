@@ -18,6 +18,7 @@ using uint8 = unsigned char;
 //消息数据定义
 struct Message
 {
+	int32 srcModuleID;
 	int32 MessageID;
 	uint32 dataSize;
 	char data[1024] ;
@@ -26,7 +27,7 @@ struct Message
 
 	~Message()
 	{
-		
+
 	}
 	Message()
 	{
@@ -36,6 +37,7 @@ struct Message
 	{
 		MessageID = -1;
 		dataSize = 0;
+		srcModuleID = -1;
 		memset(data,0,1024);
 		return true;
 	}
@@ -44,12 +46,14 @@ struct Message
 	{
 		MessageID = m.MessageID;
 		dataSize = m.dataSize;
+		srcModuleID = m.srcModuleID;
 		memcpy(data, m.data, dataSize);
 	}
 	Message& operator=(const Message& m) 
 	{
 		MessageID = m.MessageID;
 		dataSize = m.dataSize;
+		srcModuleID = m.srcModuleID;
 		memcpy(data, m.data, dataSize);
 		return *this;
 	}

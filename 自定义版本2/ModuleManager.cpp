@@ -56,6 +56,7 @@ void ModuleManager::InitModule()
 
 bool ModuleManager::pushDataMessageQueue(Message* m)
 {
+   if(m == nullptr)return false;
     dataMessageQueue.push(m);
     return true;
 }
@@ -90,7 +91,7 @@ void ModuleManager::AssignData()
 
             for (int i = 0; i < MessageTable[m->MessageID].size(); i++)
             {
-            
+                
                 pushMessageToModule(m, MessageTable[m->MessageID][i]);
             }
 

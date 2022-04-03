@@ -36,6 +36,10 @@ int main()
 	{
 	   string cmd;
 	   cin >> cmd;
+	   if(cmd == "q")
+	   {
+		   exit(0);
+	   }
 	}
 	
 
