@@ -1,4 +1,4 @@
-#include "Module.h"
+#include "ModuleManager.h"
 
 
 
@@ -8,6 +8,9 @@ ModuleBase::ModuleBase()
 	{
 		MessageObjPool.push(new Message());
 	}
+
+   __ModuleManager->RegisterModule(this);
+
 	
 }
 

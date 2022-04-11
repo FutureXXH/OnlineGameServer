@@ -23,9 +23,9 @@ int main()
 
 
 	ModuleBase* p = new testModule();
-	__ModuleManager->RegisterModule(p);
+	
     ModuleBase* p2 = new NetModule();
-    __ModuleManager->RegisterModule(p2);
+    
 	ThreadManager* tm = new ThreadManager(2, __ModuleManager);
 	tm->StartThread();
 

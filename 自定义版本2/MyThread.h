@@ -1,7 +1,6 @@
 #ifndef __MYTHREAD_H
 #define __MYTHREAD_H
 #include "IDefine.h"
-#include "Module.h"
 #include "ModuleManager.h"
 #include <unordered_map>
 #include <chrono>

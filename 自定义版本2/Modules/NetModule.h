@@ -1,6 +1,5 @@
 #ifndef __NETMODULE_H
 #define __NETMODULE_H
-#include "../Module.h"
 #include "../IDefine.h"
 #include "../ModuleManager.h"
 #include "../MyTool.h"
