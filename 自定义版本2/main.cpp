@@ -2,7 +2,7 @@
 #include "ModuleManager.h"
 #include "Modules/testModule.h"
 #include "Modules/NetModule.h"
-
+#include "ConsoleCmd.h"
 
 #include "MyThread.h"
 #include <thread>
@@ -36,9 +36,9 @@ int main()
 	{
 	   string cmd;
 	   cin >> cmd;
-	   if(cmd == "q")
+	   if(!__ConsoleCMD->parseConsoleCMD(cmd))
 	   {
-		   exit(0);
+		   cout << "未知指令 输入help查看指令列表" << endl;
 	   }
 	}
 	

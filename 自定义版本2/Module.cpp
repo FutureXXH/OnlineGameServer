@@ -65,3 +65,9 @@ bool ModuleBase::PushMessageObj(Message* obj)
      MessageObjPool.push(obj);
 	return true;
 }
+
+uint32 ModuleBase::GetRegMessageSize()
+{
+  return MessageReg.size();
+
+}

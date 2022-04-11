@@ -9,6 +9,8 @@ ModuleManager::ModuleManager()
      {
      		MessageObjPool.push(new Message());
      }
+
+     reg_ConsoleCMD();
 }
 
 
@@ -134,4 +136,26 @@ bool ModuleManager::PushMessageObj(Message* obj)
 {
      MessageObjPool.push(obj);
      return true;
+}
+
+
+void printModlueInfo()
+{
+    cout << "模块信息:"  << endl;
+    int i = 1;
+  for (auto it = __ModuleManager->ModuleTable.begin(); it != __ModuleManager->ModuleTable.end(); it++,i++)
+  {
+      cout  << i << "   模块ID:" << it->second->ID << "   模块注册的消息数量 : " << it->second->GetRegMessageSize() << endl;
+  }
+
+  
+
+}
+
+
+
+
+void ModuleManager::reg_ConsoleCMD()
+{
+   __ConsoleCMD->Register_Console_CMD("minfo",&printModlueInfo,"模块信息");
 }

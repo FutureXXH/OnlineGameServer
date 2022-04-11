@@ -3,6 +3,7 @@
 #include "MyTool.h"
 #include <unordered_map>
 #include <vector>
+#include "ConsoleCmd.h"
 
 
 using namespace std;
@@ -44,6 +45,8 @@ public:
 
     //获取一个消息对象
 	Message* GetMessageObj();
+    //获取已注册消息的数量
+	uint32 GetRegMessageSize();
 
 	//放回一个消息对象
 	bool PushMessageObj(Message* obj);
@@ -77,8 +80,8 @@ private:
      //消息对象池
 	ThreadSafe_Queue<Message*> MessageObjPool;
 	int MessageObjPoolSize = 1024;
-
-
+     
+     friend void printModlueInfo();
 
 	friend class ThreadManager;
 
@@ -107,6 +110,10 @@ public:
 	bool pushDataMessageQueue(Message* m);
 	//推送消息给指定模块队列  会拷贝消息数据 
 	bool pushMessageToModule(Message* m, int32 ModuleID);
+	//===========================================
+    //注册控制台指令
+	void reg_ConsoleCMD();
+	//===========================================
 };
 
 
