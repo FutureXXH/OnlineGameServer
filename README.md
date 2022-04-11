@@ -6,8 +6,11 @@
 网络处理部分也是一个模块，使用epoll处理io数据
 2.无需专门调用注册函数，new出来的模块对象自动注册
 
-结构：
+结构:
+===
+
 ModuleManager:  管理Module的类(全局单例) 
+
 
 Module: 模块基类 写模块时继承该类 需要覆写Init(初始化运行函数),update(每循环运行),parseMessage(解析消息函数)。
 
