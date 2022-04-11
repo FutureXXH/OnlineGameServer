@@ -17,11 +17,16 @@ ModuleBase: 模块基类 写模块时继承该类 需要覆写Init(初始化运�
 
 ThreadManager：线程管理类 管理处理模块的线程 通过该类开启整个模块功能
 
+ConsoleCmd: 控制台指令类  用于注册控制台指令
+
 
 
 ![QQ截图20220411165223](https://user-images.githubusercontent.com/60800578/162700685-fa832bbe-8ca5-43aa-871d-7bb5e66f1835.png)
 
 ![QQ截图20220411171206](https://user-images.githubusercontent.com/60800578/162704451-40054d3e-9f8f-488f-85b8-2d2560dfaf3f.png)
+
+![QQ截图20220411183456](https://user-images.githubusercontent.com/60800578/162723114-4493eea8-2cab-4a86-9568-b963e7e1946a.png)
+
 
 
 
