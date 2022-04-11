@@ -5,10 +5,12 @@ ModuleManager* __ModuleManager = new ModuleManager();
 
 ModuleManager::ModuleManager()
 {
-     for (int i = 0; i < MessageObjPoolSize; i++)
-     {
-     		MessageObjPool.push(new Message());
-     }
+    //预开辟消息数据内存
+	Message *Messagepool = new Message[MessageObjPoolSize];
+	for (int i = 0; i < MessageObjPoolSize; i++)
+	{
+		MessageObjPool.push(&Messagepool[i]);
+	}
 
      reg_ConsoleCMD();
 }
