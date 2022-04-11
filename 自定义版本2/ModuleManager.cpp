@@ -3,6 +3,11 @@
 #include <iostream>
 ModuleManager* __ModuleManager = new ModuleManager();
 
+
+
+
+
+
 ModuleManager::ModuleManager()
 {
     //预开辟消息数据内存

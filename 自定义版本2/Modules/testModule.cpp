@@ -7,7 +7,7 @@ void testModule::update()
 
 void testModule::Init()
 {
-	ID = 2;
+
 	//注册消息 id为1
     RegisterMessageID(1);
 	cout << "初始化模块" << ID	<< endl;

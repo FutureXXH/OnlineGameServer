@@ -12,7 +12,7 @@ class ConsoleCMD
    unordered_map<string,function<void()>> cmdmap;
    unordered_map<string,string> cmdInfo;
 
-   friend void printCmdhelp();
+   friend void printCmdHelp();
    
 public:
 ConsoleCMD();

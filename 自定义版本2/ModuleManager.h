@@ -10,6 +10,10 @@ using namespace std;
 
 class ThreadManager;
 
+
+
+
+
 //模块抽象基类
 class ModuleBase
 {
@@ -114,8 +118,23 @@ public:
     //注册控制台指令
 	void reg_ConsoleCMD();
 	//===========================================
+
+
+	template<class T>
+	 ModuleBase* Generate_Module(int setid);
+
+
 };
 
+template<class T>
+ModuleBase* ModuleManager::Generate_Module(int setid)
+{
+
+    ModuleBase* p =  new T();
+    p->ID = setid;
+    
+    return p;
+}
 
 
 extern ModuleManager* __ModuleManager;

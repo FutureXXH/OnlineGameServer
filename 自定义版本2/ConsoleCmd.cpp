@@ -28,7 +28,7 @@ bool ConsoleCMD::Register_Console_CMD(const string& cmd,function<void()> fun, st
 
 
 //=================================默认控制台命令=================================================
-void printCmdhelp()
+void printCmdHelp()
 {
         cout << "命令列表" << endl;
         int i = 0;
@@ -46,9 +46,10 @@ void stopServer()
 }
 
 
+//=================================================================================
 ConsoleCMD::ConsoleCMD()
 {
-   Register_Console_CMD("help",&printCmdhelp,"命令列表");
-    Register_Console_CMD("stop",&stopServer,"关闭服务器");
+   Register_Console_CMD("help",&printCmdHelp,"命令列表");
+  Register_Console_CMD("stop",&stopServer,"关闭服务器");
 
 }

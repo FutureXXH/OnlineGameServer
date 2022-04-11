@@ -12,7 +12,6 @@ using namespace std;
 using namespace chrono;
 
 
-
 int main()
 {
      ios::sync_with_stdio(false);
@@ -22,9 +21,9 @@ int main()
 
 
 
-	ModuleBase* p = new testModule();
+	ModuleBase* p = __ModuleManager->Generate_Module<testModule>(1000);
 	
-    ModuleBase* p2 = new NetModule();
+    ModuleBase* p2 = __ModuleManager->Generate_Module<NetModule>(2000);
     
 	ThreadManager* tm = new ThreadManager(2, __ModuleManager);
 	tm->StartThread();

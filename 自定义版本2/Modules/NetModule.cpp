@@ -258,7 +258,6 @@ bool NetModule::CloseSocketData(Socket sock)
  void NetModule::Init()
  {
     
-     ID = 1;
      cout << "初始化模块" << ID << endl;
      
 
