@@ -17,7 +17,7 @@ ModuleBase: 模块基类 写模块时继承该类 需要覆写Init(初始化运�
 
 ThreadManager：线程管理类 管理处理模块的线程 通过该类开启整个模块功能
 
-ConsoleCmd: 控制台指令类  用于注册控制台指令
+ConsoleCmd: 控制台指令类  用于注册/解析控制台指令(全局单例)
 
 
 
