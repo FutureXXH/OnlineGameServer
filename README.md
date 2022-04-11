@@ -23,7 +23,8 @@ ConsoleCmd: 控制台指令类 在主线程运行 用于注册/解析控制台�
 
 
 
-![QQ截图20220411165223](https://user-images.githubusercontent.com/60800578/162700685-fa832bbe-8ca5-43aa-871d-7bb5e66f1835.png)
+![QQ截图20220411223605](https://user-images.githubusercontent.com/60800578/162763181-13c2f4b0-0831-4632-9b12-ffe26ca28b10.png)
+
 
 ![QQ截图20220411171206](https://user-images.githubusercontent.com/60800578/162704451-40054d3e-9f8f-488f-85b8-2d2560dfaf3f.png)
 
