@@ -1,9 +1,19 @@
 # TCPOnlineGameServer
 自定义V2版本  Actor模型 模块化编程
 =========================================================
-使用actor模型可以大大减少代码模块间的耦合度 更易维护与扩展。
+特点：
+1.使用actor模型可以大大减少代码模块间的耦合度 更易维护与扩展。
 网络处理部分也是一个模块，使用epoll处理io数据
+2.无需专门调用注册函数，new出来的模块对象自动注册
 
+结构：
+ModuleManager:  管理Module的类(全局单例) 
+Module: 模块基类 写模块时继承该类 需要覆写Init(初始化运行函数),update(每循环运行),parseMessage(解析消息函数)。
+ThreadManager：线程管理类 管理处理模块的线程 通过该类开启整个模块功能
+
+
+
+![QQ截图20220411165223](https://user-images.githubusercontent.com/60800578/162700685-fa832bbe-8ca5-43aa-871d-7bb5e66f1835.png)
 
 
 
