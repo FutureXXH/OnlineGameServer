@@ -21,6 +21,8 @@ ThreadManager：线程管理类 管理处理模块的线程 通过该类开启�
 
 ![QQ截图20220411165223](https://user-images.githubusercontent.com/60800578/162700685-fa832bbe-8ca5-43aa-871d-7bb5e66f1835.png)
 
+![QQ截图20220411171206](https://user-images.githubusercontent.com/60800578/162704451-40054d3e-9f8f-488f-85b8-2d2560dfaf3f.png)
+
 
 
 早期构思图
