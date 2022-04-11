@@ -13,7 +13,7 @@
 结构:
 ===
 
-ModuleManager:  管理Module的类(全局单例) 
+ModuleManager:  生成与管理Module的类(全局单例) 
 
 ModuleBase: 模块基类 写模块时继承该类 需要覆写Init(初始化运行函数),update(每循环运行),parseMessage(解析消息函数)。new出来的对象会自动注册到ModuleManager中进行管理。
 
