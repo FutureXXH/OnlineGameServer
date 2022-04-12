@@ -83,6 +83,7 @@ private:
 
      //消息对象池
 	ThreadSafe_Queue<Message*> MessageObjPool;
+	//消息对象池大小
 	int MessageObjPoolSize = 1024;
      
      friend void printModlueInfo();
@@ -119,7 +120,7 @@ public:
 	void reg_ConsoleCMD();
 	//===========================================
 
-
+    //生成模块
 	template<class T>
 	 ModuleBase* Generate_Module(int setid);
 
@@ -130,8 +131,12 @@ template<class T>
 ModuleBase* ModuleManager::Generate_Module(int setid)
 {
 
+
     ModuleBase* p =  new T();
+
     p->ID = setid;
+
+	RegisterModule(p);
     
     return p;
 }

@@ -11,7 +11,7 @@ ModuleBase::ModuleBase()
 		MessageObjPool.push(&Messagepool[i]);
 	}
    //自动注册模块
-   __ModuleManager->RegisterModule(this);
+   // __ModuleManager->RegisterModule(this);
 
 	
 }

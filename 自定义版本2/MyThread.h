@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <chrono>
 #include <iostream>
+#include "ConsoleCmd.h"
 
 
 using namespace std;
@@ -20,13 +21,16 @@ class ModuleThread
 	unordered_map<int32 , ModuleBase*> ModuleReg;
 	
 public:
+    //模块线程ID
+    int ID;
 	//线程指针
     thread* myThread;
+	
 	//开始运行
 	void ThreadRun();
 	//注册线程运行模块
 	bool RegisterModule( ModuleBase* m);
-	ModuleThread() {myThread == nullptr;}
+	ModuleThread(int setid) {myThread == nullptr;ID = setid;}
 	ModuleThread& operator=(const ModuleThread&) = delete;
 	ModuleThread(const ModuleThread&) = delete;
 	
@@ -44,6 +48,8 @@ private:
 	vector<ModuleThread*> Pool;
 	//模块管理器线程指针
 	thread* ModuleManagerThreadPtr;
+    //控制台线程指针
+	thread* ConsoleThreadPtr;
 	//模块管理器指针
 	ModuleManager* ModuleManagerPtr;
 

@@ -5,7 +5,8 @@
 
 void IOThread::ThreadRun(NetModule* np)
 {
-    cout << "IO线程开启 " << ID << "|" << this_thread::get_id() << endl;
+    Log(INFO,"IO线程开启 " + to_string(ID) );
+
    NetPtr = np;
    sockaddr_in clientAddr;
    socklen_t clen = sizeof(sockaddr);
@@ -49,8 +50,7 @@ void IOThread::ThreadRun(NetModule* np)
                   clientObj->Epollfd = NetPtr->epollfd;
                   NetPtr->insert_ClientObj_Map(clientObj);
 
-
-                   cout << "有新连接" << ip << "  sock:"<< acceptsocket << endl;
+                  Log(INFO,"有新连接" + ip + "  sock:" + str(acceptsocket));
 
 
               }
@@ -77,15 +77,14 @@ void IOThread::ThreadRun(NetModule* np)
                             if(clientObj->Recv_Tail - clientObj->Recv_Head < 9)break;
                             clientObj->Recv_Head += 1;
 
-
-                                cout << "收到数据大小" << recvSize  << " "<<  clientObj->Recv_Head <<"|" << clientObj->Recv_Tail << "  "
-                                << NetPtr->OnlineTcpClients.size() << "  " << NetPtr->ClientObjPool.size() << endl;
+                                 Log(INFO,"收到数据大小" + str(recvSize)  + " "+ str(clientObj->Recv_Head) +"|" + str(clientObj->Recv_Tail) + "  "
+                                + str(NetPtr->OnlineTcpClients.size()) + "  " + str(NetPtr->ClientObjPool.size()));
                                 //获取一个消息对象
                                 auto msg = __ModuleManager->GetMessageObj();
                         
                                 if(msg == nullptr)
                                 {
-                                    cout << "在处理数据时消息指针为空" << endl;
+                                    //cout << "在处理数据时消息指针为空" << endl;
                                     continue;
                                 }
                                 //封装消息
@@ -110,12 +109,14 @@ void IOThread::ThreadRun(NetModule* np)
                   }
                   else if(recvSize == 0)
                   {
-                   cout << "连接断开" <<   epollEvents[i].data.fd << "  " << NetPtr->OnlineTcpClients.size() << "  " << NetPtr->ClientObjPool.size() << endl;
+                    Log(INFO, "连接断开" +    str(epollEvents[i].data.fd) + "  " +  str(NetPtr->OnlineTcpClients.size())+ "  " +  str(NetPtr->ClientObjPool.size()));
                    NetPtr->CloseSocketData(epollEvents[i].data.fd);
+
 
                   }
                   else{
-                      cout << "接收错误:" << recvSize << endl;
+                      Log(WARNING, "接收错误:" + str(recvSize));
+        
                   }
 
 
@@ -257,11 +258,8 @@ bool NetModule::CloseSocketData(Socket sock)
 
  void NetModule::Init()
  {
-    
-     cout << "初始化模块" << ID << endl;
+    Log(INFO,"初始化模块"+ str(ID));
      
-
-
      for (int i = 0; i < MaxClient; i++)
      {
          ClientObjPool.push(new TCPClient());
@@ -272,7 +270,7 @@ bool NetModule::CloseSocketData(Socket sock)
      TcpServerInit(5678);
      EpollInit();
      EpollThreadInit(5);
-      cout << "网络模块初始化完成" << this_thread::get_id() << endl;
+    Log(INFO,"网络模块初始化完成"+ str(ID));
 
  }
 

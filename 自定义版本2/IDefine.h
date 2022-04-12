@@ -15,6 +15,8 @@ using uint32 = unsigned int;
 using uint16 = unsigned short;
 using uint8 = unsigned char;
 
+#define str(x) to_string(x) 
+
 //消息数据定义
 struct Message
 {

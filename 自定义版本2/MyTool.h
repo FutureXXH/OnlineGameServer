@@ -5,6 +5,8 @@
 #include "IDefine.h"
 
 using namespace std;
+
+
 //线程安全队列
 template<class T>
 class ThreadSafe_Queue
@@ -19,12 +21,6 @@ public:
 	T pop();
 	//当前队列大小
 	uint32 size();
-
-
-
-
-
-
 };
 
 
@@ -63,6 +59,8 @@ template<class T>
 	q.pop();
 	return p;
 }
+
+
 
 template<class T>
  uint32 ThreadSafe_Queue<T>::size()

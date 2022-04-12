@@ -2,6 +2,7 @@
 
 void ModuleThread::ThreadRun()
 {
+	Log(INFO,"模块处理线程开启: "+str(ID));
 
 	while (true)
 	{
@@ -41,6 +42,13 @@ ThreadManager::ThreadManager(int SetModuleThreadNum, ModuleManager* setModuleMan
 
 void ThreadManager::StartThread()
 {
+
+	 Log = bind(&ConsoleLog::push_ConsoleLog,__ConsoleLog,placeholders::_1,placeholders::_2);
+	ConsoleThreadPtr = new thread(&ConsoleLog::ConsoleThreadRun,__ConsoleLog);
+	this_thread::sleep_for(chrono::seconds(1));
+    Log(INFO,"服务器控制台初始化完毕");
+
+
 	if (ModuleManagerPtr == nullptr)
 	{
 		throw"模块管理器指针为null";
@@ -56,7 +64,7 @@ void ThreadManager::StartThread()
 	//平均分配模块给线程
 	for (int i = 0; i < ModuleThreadNum; i++)
 	{
-		ModuleThread* ModuleThreadp = new ModuleThread();
+		ModuleThread* ModuleThreadp = new ModuleThread(i);
 		if (i == ModuleThreadNum - 1)
 		{
 			while (Cur < ModuleNum)
@@ -68,7 +76,7 @@ void ThreadManager::StartThread()
 		}
 		else
 		{
-			for (int i = 0; i < AveThreadModuleNum; i++)
+			for (int j = 0; j < AveThreadModuleNum; j++)
 			{
 				
 				ModuleThreadp->RegisterModule(ModuleManagerPtr->ModuleReg[Cur]);

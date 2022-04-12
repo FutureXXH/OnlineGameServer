@@ -131,7 +131,7 @@ Message* ModuleManager::GetMessageObj()
     if(MessageObjPool.size() == 0)return nullptr;
 	auto p = MessageObjPool.pop();
     if(p == nullptr){
-        cout << "获取的消息指针为nullptr" << endl;
+        Log(WARNING,"获取的消息指针为nullptr");
         return nullptr;
     }
 	p->reset();
@@ -148,11 +148,12 @@ bool ModuleManager::PushMessageObj(Message* obj)
 
 void printModlueInfo()
 {
-    cout << "模块信息:"  << endl;
+    Log(INFO,"模块信息:");
     int i = 1;
   for (auto it = __ModuleManager->ModuleTable.begin(); it != __ModuleManager->ModuleTable.end(); it++,i++)
   {
-      cout  << i << "   模块ID:" << it->second->ID << "   模块注册的消息数量 : " << it->second->GetRegMessageSize() << endl;
+    Log(INFO, to_string(i) + "   模块ID:" + to_string(it->second->ID) + "   模块注册的消息数量 : " + to_string(it->second->GetRegMessageSize()) );
+
   }
 
   

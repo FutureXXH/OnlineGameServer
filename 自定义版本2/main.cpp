@@ -37,7 +37,7 @@ int main()
 	   cin >> cmd;
 	   if(!__ConsoleCMD->parseConsoleCMD(cmd))
 	   {
-		   cout << "未知指令 输入help查看指令列表" << endl;
+		   Log(INFO,"未知指令 输入help查看指令列表");
 	   }
 	}
 	
