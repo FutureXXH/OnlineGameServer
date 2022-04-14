@@ -93,7 +93,7 @@ public:
 	virtual void update() override;
 	virtual void Init() override;
 	virtual void parseMessage(Message* messagePtr) override;
-
+	virtual void Exit() override;
 
    static bool SetNonblockingSocket(Socket socket);
 

@@ -26,3 +26,7 @@ function OnParseMessage(MessageID,data,srcModuleID)
 end
 
 
+function OnExit()
+    print("[Lua]: 模块: "..ID.. "退出")
+end
+

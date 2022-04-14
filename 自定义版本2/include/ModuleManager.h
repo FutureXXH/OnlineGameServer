@@ -8,13 +8,18 @@
 #include <mutex>
 #include <unordered_set>
 
+
 #define REGMASSAGE  -3
+
+#define MODULE_INIT 0
+#define MODULE_RUNING 1
+#define MODULE_CLOSING 2
+
 
 
 using namespace std;
 
 class ThreadManager;
-
 
 
 
@@ -29,15 +34,14 @@ private:
 	ThreadSafe_Queue<Message*> MessageObjPool;
 	int MessageObjPoolSize = 1024;
     
-
+    Message *MessageMemoryPtr;
 
 public:
     
-     
-    
-
+     //模块状态
+    short ModuleState = MODULE_INIT;
+    virtual ~ModuleBase();
 	ModuleBase();
-
 
 
 	friend class ModuleManager;
@@ -69,6 +73,8 @@ public:
 	virtual void Init() = 0;
 	//解析消息
 	virtual void parseMessage(Message* messagePtr) = 0;
+	//模块退出执行
+	virtual void Exit() = 0;
 
 };
 
@@ -79,6 +85,8 @@ class LuaModule:public ModuleBase
      string luaFileName;
 	lua_State * luaPtr;
 public:
+
+    virtual ~LuaModule();
     LuaModule(int setID,string FileName);
     //初始化Lua虚拟机
     void InitLua();
@@ -86,6 +94,8 @@ public:
 	bool OpenLuaFile();
 	//重载Lua代码
 	bool ReloadLua();
+    //关闭Lua虚拟机
+	void CloseLua();
 	//发送消息
     static int LuaSendMessage(lua_State *L);
     //注册消息
@@ -96,6 +106,8 @@ public:
 	virtual void Init() ;
 	//解析消息
 	virtual void parseMessage(Message* messagePtr);
+	//模块退出执行
+	virtual void Exit();
 
 };
 
@@ -106,6 +118,9 @@ class ModuleManager
 {
 	
 private:
+
+
+     //注册消息互斥量
      mutex regMessageMutex;
 
 	//模块ID -》模组指针
@@ -114,9 +129,7 @@ private:
 	unordered_map<int, unordered_set<int32>> MessageTable;
 	//数据队列 
 	ThreadSafe_Queue<Message*> dataMessageQueue;
-	//需要注册的模块集
-	vector<ModuleBase* > ModuleReg;
-    //记录模块注册的消息表
+    //记录模块注册的消息表 模块ID-》注册的消息ID
 	unordered_map<int32,unordered_set<int32>> ModuleRegMessageTable;
      //消息对象池
 	ThreadSafe_Queue<Message*> MessageObjPool;
@@ -128,17 +141,23 @@ private:
 
 	friend class ThreadManager;
 
-	//初始化模块
-	void InitModule();
-
-
 
 	//分发数据
 	void AssignData();
 	//管理器开始执行函数
 	void ManagerRun();
+    //处理自身消息
+	void parseSelfMessage(Message* m);
+    //重启模块
+	bool reloadLuaModule(int32 moduleID);
+	//删除一个模块
+	 bool deleteModule(int id);
 
 public:
+    ThreadSafe_Queue<ModuleBase*> ThreadModuleQueue;
+
+
+
 	//注册消息
 	bool RegisterMessage(int32 messageID, int32 moduleID);
 
@@ -146,6 +165,8 @@ public:
      ModuleManager();
     //获取一个消息对象
 	Message* GetMessageObj();
+
+
 
 	//放回一个消息对象
 	bool PushMessageObj(Message* obj);
@@ -166,6 +187,7 @@ public:
 	 ModuleBase* Generate_Module(int setid);
     //生成Lua模块
 	 ModuleBase* Generate_LuaModule(int setid,string FileName);
+
 
 };
 

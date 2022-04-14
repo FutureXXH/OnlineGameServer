@@ -1,7 +1,7 @@
 #include "../include/ModuleManager.h"
 
 #include <iostream>
-ModuleManager* __ModuleManager = new ModuleManager();
+ModuleManager* __ModuleManager = nullptr;
 
 
 
@@ -10,6 +10,9 @@ ModuleManager* __ModuleManager = new ModuleManager();
  {
      ModuleBase* p =  new LuaModule(setid,FileName);
      RegisterModule(p);
+
+
+
 
 	 return p;
 
@@ -32,35 +35,6 @@ ModuleManager::ModuleManager()
 
 
 
-void ModuleManager::InitModule()
-{
-
-
-
-    //std::cout << ModuleReg.size() << std::endl;
-    //初始化模块表 
-    for (int i = 0; i < ModuleReg.size(); i++)
-    {
-       
-        if (ModuleReg[i] == nullptr || ModuleTable.count(ModuleReg[i]->ID) > 0)continue;
-       
-        ModuleTable.emplace(ModuleReg[i]->ID, ModuleReg[i]);
-
-    }
-
-
-
-
-   //执行初始化函数
-    for (auto it = ModuleTable.begin(); it != ModuleTable.end(); it++)
-    {
-        if(it->second == nullptr)continue;
-         it->second->Init();
-    }
-
-
-
-}
 
 bool ModuleManager::pushDataMessageQueue(Message* m)
 {
@@ -79,7 +53,8 @@ bool ModuleManager::pushMessageToModule(Message* m, int32 moduleID)
 bool ModuleManager::RegisterModule(ModuleBase* mp)
 {
     if (mp == nullptr)return false;
-    ModuleReg.emplace_back(mp);
+    ModuleTable.emplace(mp->ID,mp);
+    ThreadModuleQueue.push(mp);
     return true;
 }
 
@@ -99,10 +74,12 @@ void ModuleManager::AssignData()
     while (m != nullptr)
     {
 
-
-
-
-        if (MessageTable.count(m->MessageID) != 0)
+        //给模块管理器的消息
+        if(m->MessageID == 0)
+        {
+              parseSelfMessage(m);
+        }
+        else if (MessageTable.count(m->MessageID) != 0)
         {
 
             for (auto it = MessageTable[m->MessageID].begin(); it != MessageTable[m->MessageID].end(); it++)
@@ -119,11 +96,53 @@ void ModuleManager::AssignData()
 
 
 }
+#define ReLoadLuaModule 3
+#define DeleteModule 4
+#define LoadLuaModule 2
+void ModuleManager::parseSelfMessage(Message* m)
+{
+    switch (m->srcModuleID)
+    {
+    case LoadLuaModule:
+    {
+           int ModuleID = -1;
+
+           memcpy(&ModuleID,m->data,4);
+           string filename;
+           filename.assign(m->data+4,m->dataSize-4);
+           auto p =Generate_LuaModule(ModuleID,filename);
+    }
+    break;
+    case ReLoadLuaModule:
+       {
+           int relaodID = -1;
+           memcpy(&relaodID,m->data,4);
+           reloadLuaModule(relaodID);
+       }
+    break;
+    case DeleteModule:
+   {
+    int relaodID = -1;
+    memcpy(&relaodID,m->data,4);
+    deleteModule(relaodID);
+         
+   }
+    break;
+    
+    default:
+        break;
+    }
+}
+
+
+
+
+
+
 
 void ModuleManager::ManagerRun()
 {
 
-    InitModule();
     while (true)
     {
         AssignData();
@@ -150,6 +169,25 @@ bool ModuleManager::PushMessageObj(Message* obj)
      return true;
 }
 
+bool ModuleManager::reloadLuaModule(int32 moduleID)
+{
+
+
+   if(ModuleTable.count(moduleID) == 0)
+   {
+       Log(ERROR,"没有这个模块");
+       return false;
+   }
+   auto p =  dynamic_cast<LuaModule*>(ModuleTable[moduleID]);
+   if(p == nullptr)
+   {
+       Log(ERROR,"重启模块异常");
+      return false;
+   }
+   p->ReloadLua();
+   return true;
+
+}
 
 void printModlueInfo()
 {
@@ -166,32 +204,103 @@ void printModlueInfo()
 }
 
 
-void reloadLuaModule()
+void ReloadLuaModule()
 {
     Log(INFO,"输入模块ID");
     int ID;
     cin >> ID;
-   if(__ModuleManager->ModuleTable.count(ID) == 0)
-   {
-       Log(ERROR,"没有这个模块");
-       return;
-   }
-   auto p =  dynamic_cast<LuaModule*>(__ModuleManager->ModuleTable[ID]);
-   if(p == nullptr)
-   {
-       Log(ERROR,"重启模块异常");
-      return;
-   }
-   p->ReloadLua();
 
+    auto m = __ModuleManager->GetMessageObj();
+    if(m == nullptr)return;
+
+    m->MessageID= 0;
+    m->dataSize = 4;
+    memcpy(m->data,(char*)&ID,4);
+    m->srcModuleID = ReLoadLuaModule;
+
+    __ModuleManager->pushDataMessageQueue(m);
 
 }
 
+
+void delete_Module()
+{
+    Log(INFO,"输入模块ID");
+    int ID;
+    cin >> ID;
+
+    auto m = __ModuleManager->GetMessageObj();
+    if(m == nullptr)return;
+
+    m->MessageID= 0;
+    m->dataSize = 4;
+    memcpy(m->data,(char*)&ID,4);
+    m->srcModuleID = DeleteModule;
+
+    __ModuleManager->pushDataMessageQueue(m);
+
+}
+
+
+void load_Module()
+{
+    Log(INFO,"输入新创建的模块ID");
+    int ID;
+    cin >> ID;
+    Log(INFO,"输入新创建的lua模块文件名");
+    string filename;
+    cin >> filename;
+
+
+    auto m = __ModuleManager->GetMessageObj();
+    if(m == nullptr)return;
+
+    m->MessageID= 0;
+    m->dataSize = filename.length()+4;
+
+    memcpy(m->data,(char*)&ID,4);
+    memcpy(m->data+4,filename.c_str(),filename.length());
+    m->srcModuleID = LoadLuaModule;
+
+    __ModuleManager->pushDataMessageQueue(m);
+
+}
 
 
 
 void ModuleManager::reg_ConsoleCMD()
 {
    __ConsoleCMD->Register_Console_CMD("minfo",&printModlueInfo,"模块信息");
-      __ConsoleCMD->Register_Console_CMD("reloadL",&reloadLuaModule,"重载Lua模块");
+   __ConsoleCMD->Register_Console_CMD("reloadl",&ReloadLuaModule,"重载Lua模块");
+   __ConsoleCMD->Register_Console_CMD("deletem",&delete_Module,"删除模块");
+    __ConsoleCMD->Register_Console_CMD("loadm",&load_Module,"加载模块");
+}
+
+
+bool ModuleManager::deleteModule(int id)
+{
+   if(ModuleTable.count(id) == 0)
+   {
+       Log(ERROR,"没有找到该模块");
+       return false;
+   }
+
+    auto p = ModuleTable[id];
+
+    //删除模块注册的消息
+    for (auto it = ModuleRegMessageTable[id].begin(); it !=  ModuleRegMessageTable[id].end(); it++)
+    {
+        if(MessageTable[*it].count(id) > 0)
+        {
+            MessageTable[*it].erase(id);
+        }
+    }
+    ModuleRegMessageTable.erase(id);
+    //删除模块的记录
+    ModuleTable.erase(id);
+    //更新模块状态
+    p->ModuleState = MODULE_CLOSING;
+
+
+
 }

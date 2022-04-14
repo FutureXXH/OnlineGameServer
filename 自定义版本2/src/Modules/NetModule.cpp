@@ -287,3 +287,8 @@ void NetModule::update()
 {
 	
 }
+
+void NetModule::Exit() 
+{
+
+}

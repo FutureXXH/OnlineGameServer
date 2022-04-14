@@ -1,42 +1,64 @@
 #include "../include/MyThread.h"
 
+ThreadManager* __ThreadManager = nullptr;
+
+
 void ModuleThread::ThreadRun()
 {
 	Log(INFO,"模块处理线程开启: "+str(ID));
 
+
+    
 	while (true)
 	{
-		for (auto it = ModuleReg.begin(); it != ModuleReg.end(); it++)
-		{
-			if (it->second == nullptr)
-			{
-				//模块指针为null
-				continue;
-			}
+		//从模块队列中取出模块进行处理
+		auto ModulePtr = __ModuleManager->ThreadModuleQueue.pop();
+		if(ModulePtr == nullptr)continue;
 
-			it->second->parseQueue();
-			it->second->update();
-           
-		}
+
+       switch (ModulePtr->ModuleState)
+	   {
+	   case MODULE_INIT:
+	   {
+		   	ModulePtr->Init();
+			ModulePtr->ModuleState = MODULE_RUNING;
+			__ModuleManager->ThreadModuleQueue.push(ModulePtr);
+	   }
+		   break;
+	   case MODULE_RUNING:
+	   {
+		   ModulePtr->parseQueue();
+		    ModulePtr->update();
+          __ModuleManager->ThreadModuleQueue.push(ModulePtr);
+	   }
+		   break;
+	   case MODULE_CLOSING:
+	   {
+		   //模块即将删除
+			Log(WARNING,"模块ID" + str(ModulePtr->ID)+ "正在删除");
+			ModulePtr->Exit();
+				
+			delete ModulePtr;
+	   }
+		   break;   
+	   default:
+		   break;
+	   }
+
+
 		this_thread::sleep_for(chrono::milliseconds(10));
 	}
 
 
 }
 
-bool ModuleThread::RegisterModule( ModuleBase* m)
-{
-	if (ModuleReg.count(m->ID) > 0)return false;
-	ModuleReg.emplace(m->ID, m);
 
-	return true;
-}
 
-ThreadManager::ThreadManager(int SetModuleThreadNum, ModuleManager* setModuleManagerPtr)
+ThreadManager::ThreadManager(int SetModuleThreadNum)
 {
 
 	ModuleThreadNum = SetModuleThreadNum;
-	ModuleManagerPtr = setModuleManagerPtr;
+
 
 }
 
@@ -49,40 +71,18 @@ void ThreadManager::StartThread()
     Log(INFO,"服务器控制台初始化完毕");
 
 
-	if (ModuleManagerPtr == nullptr)
+	if (__ModuleManager == nullptr)
 	{
 		throw"模块管理器指针为null";
 	}
 	//开启模块管理器线程
-	ModuleManagerThreadPtr = new thread(&ModuleManager::ManagerRun, ModuleManagerPtr);
+	ModuleManagerThreadPtr = new thread(&ModuleManager::ManagerRun, __ModuleManager);
 	ModuleManagerThreadPtr->detach();
 
 	//==================================================================================
-	int ModuleNum = ModuleManagerPtr->ModuleReg.size();
-	int AveThreadModuleNum = ModuleNum / ModuleThreadNum;
-	int Cur = 0;
-	//平均分配模块给线程
 	for (int i = 0; i < ModuleThreadNum; i++)
 	{
 		ModuleThread* ModuleThreadp = new ModuleThread(i);
-		if (i == ModuleThreadNum - 1)
-		{
-			while (Cur < ModuleNum)
-			{
-				
-				ModuleThreadp->RegisterModule(ModuleManagerPtr->ModuleReg[Cur]);
-				Cur++;
-			}
-		}
-		else
-		{
-			for (int j = 0; j < AveThreadModuleNum; j++)
-			{
-				
-				ModuleThreadp->RegisterModule(ModuleManagerPtr->ModuleReg[Cur]);
-				Cur++;
-			}
-		}
 		Pool.emplace_back(ModuleThreadp);
 		ModuleThreadp->myThread = new thread(&ModuleThread::ThreadRun, ModuleThreadp);
 		ModuleThreadp->myThread->detach();

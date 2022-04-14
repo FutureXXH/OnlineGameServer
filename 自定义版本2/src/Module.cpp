@@ -162,15 +162,42 @@ bool LuaModule::OpenLuaFile()
 	}
  }
 
+void LuaModule::Exit() 
+{
+  	lua_getglobal(luaPtr,"OnExit");
+	int iserr = lua_pcall(luaPtr,0,0,0);
+	if(iserr)
+	{
+		Log(ERROR,lua_tostring(luaPtr,-1));
+	}
+}
+
+LuaModule::~LuaModule()
+{
+  CloseLua();
+}
+
+void LuaModule::CloseLua()
+{
+   lua_close(luaPtr);
+}
+
 
 //========================================================================================
+
+
+ModuleBase::~ModuleBase()
+{
+
+	delete[] MessageMemoryPtr;
+}
 ModuleBase::ModuleBase()
 {
 	//预开辟消息数据内存
-	Message *Messagepool = new Message[MessageObjPoolSize];
+	MessageMemoryPtr = new Message[MessageObjPoolSize];
 	for (int i = 0; i < MessageObjPoolSize; i++)
 	{
-		MessageObjPool.push(&Messagepool[i]);
+		MessageObjPool.push(&MessageMemoryPtr[i]);
 	}
 }
 
@@ -225,4 +252,7 @@ bool ModuleBase::PushMessageObj(Message* obj)
      MessageObjPool.push(obj);
 	return true;
 }
+
+
+
 
