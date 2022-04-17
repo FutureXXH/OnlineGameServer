@@ -25,6 +25,7 @@ function OnParseMessage(MessageID,data,srcModuleID)
     print("[Lua]:收到第"..i.. "条消息 ID:"..MessageID .. " : "..str .." 来自模块ID:"..srcModuleID)
     str = "hello lua2"
     str = string.pack("c10",str);
+    --发送消息 消息id5  数据str   
     GameServerLuaLib.SendMessage(5,str,ID);
 
 end

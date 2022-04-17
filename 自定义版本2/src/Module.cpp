@@ -77,7 +77,12 @@ __ModuleManager->pushDataMessageQueue(m);
 
 bool LuaModule::ReloadLua()
 {
-	OpenLuaFile();
+	//重新打开lua文件
+    if(!OpenLuaFile())
+	{
+		ModuleState = MODULE_CLOSING;
+	}
+	//执行初始函数
 	Init();
 }
 
@@ -86,8 +91,13 @@ LuaModule::LuaModule(int setID,string FileName)
 {
    luaFileName = "./LuaModules/" + FileName;
    ID = setID;
+    //初始化lua虚拟机
     InitLua();
-     OpenLuaFile();
+	//打开lua文件
+    if(!OpenLuaFile())
+	{
+		ModuleState = MODULE_CLOSING;
+	}
 }
 
 
@@ -234,7 +244,6 @@ bool ModuleBase::pushMessage(Message* m)
 bool ModuleBase::RegisterMessageID(int32 ID)
 {
 	__ModuleManager->RegisterMessage(ID,this->ID);
-
 	return true;
 }
 

@@ -40,7 +40,7 @@ int main()
 
 	 //===============================================================
      //C++模块 网络模块
-	 ModuleBase* NetM = __ModuleManager->Generate_Module<NetModule>(1000);
+	 ModuleBase* NetM = __ModuleManager->Generate_CModule<NetModule>(1000);
 	//Lua模块
     ModuleBase* luaM1 = __ModuleManager->Generate_LuaModule(2000,"lua1.lua");
     ModuleBase* luaM2 = __ModuleManager->Generate_LuaModule(3000,"lua2.lua");

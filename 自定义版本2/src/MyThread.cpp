@@ -8,7 +8,7 @@ void ModuleThread::ThreadRun()
 	Log(INFO,"模块处理线程开启: "+str(ID));
 
 
-    
+    //线程调度
 	while (true)
 	{
 		//从模块队列中取出模块进行处理

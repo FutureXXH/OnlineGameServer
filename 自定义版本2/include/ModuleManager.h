@@ -11,9 +11,9 @@
 
 #define REGMASSAGE  -3
 
-#define MODULE_INIT 0
-#define MODULE_RUNING 1
-#define MODULE_CLOSING 2
+#define MODULE_INIT 0  //模块初始化状态 会执行Init函数
+#define MODULE_RUNING 1  //模块运行状态 会执行update 与消息处理函数
+#define MODULE_CLOSING 2 //模块即将关闭状态 会运行Exit函数 然后注销模块
 
 
 
@@ -184,7 +184,7 @@ public:
 
     //生成C++模块
 	template<class T>
-	 ModuleBase* Generate_Module(int setid);
+	 ModuleBase* Generate_CModule(int setid);
     //生成Lua模块
 	 ModuleBase* Generate_LuaModule(int setid,string FileName);
 
@@ -192,7 +192,7 @@ public:
 };
 
 template<class T>
-inline ModuleBase* ModuleManager::Generate_Module(int setid)
+inline ModuleBase* ModuleManager::Generate_CModule(int setid)
 {
 
 
@@ -204,12 +204,12 @@ inline ModuleBase* ModuleManager::Generate_Module(int setid)
     
     return p;
 }
-
+ 
+//不能使用该生成C模块的函数生成lua模块 返回空指针
 template<>
-inline ModuleBase* ModuleManager::Generate_Module<LuaModule>(int setid)
+inline ModuleBase* ModuleManager::Generate_CModule<LuaModule>(int setid)
  {
-
-   // Log(ERROR, "没有指定lua模块文件名参数生成失败 ID:" + str(setid));
+    
    return nullptr;
 }
 

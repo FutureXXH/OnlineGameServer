@@ -19,91 +19,91 @@ void IOThread::ThreadRun(NetModule* np)
              
               if(epollEvents[i].data.fd == NetPtr->ServerSocket)
               {
-                // 有新连接
-                Socket acceptsocket = accept(NetPtr->ServerSocket,(sockaddr*)&clientAddr,&clen);
-                if(acceptsocket < 0)
-                {
-                    //处理连接错误
-                    continue;
-                }
-                   
-                   TCPClient* clientObj = NetPtr->GetNullClientObj();
-                   if(clientObj == nullptr)
-                   {
-                       cout << "达到最大连接数量" << endl;
-                       continue;
-                   }
+                    // 有新连接
+                    Socket acceptsocket = accept(NetPtr->ServerSocket,(sockaddr*)&clientAddr,&clen);
+                    if(acceptsocket < 0)
+                    {
+                        //处理连接错误
+                        continue;
+                    }
+                    
+                    TCPClient* clientObj = NetPtr->GetNullClientObj();
+                    if(clientObj == nullptr)
+                    {
+                        cout << "达到最大连接数量" << endl;
+                        continue;
+                    }
 
 
-                   epoll_event tempEvent;
-                   tempEvent.data.fd = acceptsocket;
-                   tempEvent.events = EPOLLIN|EPOLLET;//边缘触发
-                   epoll_ctl(NetPtr->epollfd,EPOLL_CTL_ADD,acceptsocket,&tempEvent);
+                    epoll_event tempEvent;
+                    tempEvent.data.fd = acceptsocket;
+                    tempEvent.events = EPOLLIN|EPOLLET;//边缘触发
+                    epoll_ctl(NetPtr->epollfd,EPOLL_CTL_ADD,acceptsocket,&tempEvent);
 
 
 
-                   string ip(inet_ntoa(clientAddr.sin_addr));
+                    string ip(inet_ntoa(clientAddr.sin_addr));
 
-                  memcpy(clientObj->ip,ip.c_str(),ip.length());
-                  clientObj->port = clientAddr.sin_port;
-                  clientObj->clientSocket = acceptsocket;
-                  clientObj->Epollfd = NetPtr->epollfd;
-                  NetPtr->insert_ClientObj_Map(clientObj);
+                    memcpy(clientObj->ip,ip.c_str(),ip.length());
+                    clientObj->port = clientAddr.sin_port;
+                    clientObj->clientSocket = acceptsocket;
+                    clientObj->Epollfd = NetPtr->epollfd;
+                    NetPtr->insert_ClientObj_Map(clientObj);
 
-                  Log(INFO,"有新连接" + ip + "  sock:" + str(acceptsocket));
+                    Log(INFO,"有新连接" + ip + "  sock:" + str(acceptsocket));
 
 
               }
               else if(epollEvents[i].events&EPOLLIN)
               {
 
-                  TCPClient* clientObj = NetPtr->GetClientObj(epollEvents[i].data.fd);
-                  if(clientObj == nullptr)continue;
+                    TCPClient* clientObj = NetPtr->GetClientObj(epollEvents[i].data.fd);
+                    if(clientObj == nullptr)continue;
 
-                  int recvSize = recv(clientObj->clientSocket,clientObj->RecvBuff+clientObj->Recv_Tail,buffsize - clientObj->Recv_Tail,0);
+                    int recvSize = recv(clientObj->clientSocket,clientObj->RecvBuff+clientObj->Recv_Tail,buffsize - clientObj->Recv_Tail,0);
 
-                  
-                  if(recvSize > 0)
-                  {
-                    clientObj->Recv_Tail += recvSize;
-                     while (true)
-                     {
-                            //判断头
-                            while(clientObj->RecvBuff[clientObj->Recv_Head] != '&')
-                            {
-                                clientObj->Recv_Head += 1;
-                            }
-                            //判断头是否完整
-                            if(clientObj->Recv_Tail - clientObj->Recv_Head < 9)break;
-                            clientObj->Recv_Head += 1;
-
-                                 Log(INFO,"收到数据大小" + str(recvSize)  + " "+ str(clientObj->Recv_Head) +"|" + str(clientObj->Recv_Tail) + "  "
-                                + str(NetPtr->OnlineTcpClients.size()) + "  " + str(NetPtr->ClientObjPool.size()));
-                                //获取一个消息对象
-                                auto msg = __ModuleManager->GetMessageObj();
-                                
-                                if(msg == nullptr)
+                    
+                    if(recvSize > 0)
+                    {
+                        clientObj->Recv_Tail += recvSize;
+                        while (true)
+                        {
+                                //判断头
+                                while(clientObj->RecvBuff[clientObj->Recv_Head] != '&')
                                 {
-                                    //cout << "在处理数据时消息指针为空" << endl;
-                                    continue;
+                                    clientObj->Recv_Head += 1;
                                 }
+                                //判断头是否完整
+                                if(clientObj->Recv_Tail - clientObj->Recv_Head < 9)break;
+                                clientObj->Recv_Head += 1;
 
-                                //封装消息
-                                msg->srcModuleID = NetPtr->ID;
-                                memcpy(&msg->MessageID,clientObj->RecvBuff+clientObj->Recv_Head,4);
-                                memcpy(&msg->dataSize,clientObj->RecvBuff+clientObj->Recv_Head+4,4);
-                                memcpy(&msg->data,clientObj->RecvBuff+clientObj->Recv_Head+8,msg->dataSize);
+                                    Log(INFO,"收到数据大小" + str(recvSize)  + " "+ str(clientObj->Recv_Head) +"|" + str(clientObj->Recv_Tail) + "  "
+                                    + str(NetPtr->OnlineTcpClients.size()) + "  " + str(NetPtr->ClientObjPool.size()));
+                                    //获取一个消息对象
+                                    auto msg = __ModuleManager->GetMessageObj();
+                                    
+                                    if(msg == nullptr)
+                                    {
+                                        //cout << "在处理数据时消息指针为空" << endl;
+                                        continue;
+                                    }
 
-                                //将数据放入模块管理器的消息队列
-                                __ModuleManager->pushDataMessageQueue(msg);
-                                clientObj->Recv_Head += 8;
-                     }
-                     if(clientObj->Recv_Head == clientObj->Recv_Tail)
-                     {
-                         clientObj->Recv_Head = 0;
-                         clientObj->Recv_Tail = 0;
-                     }
-                     
+                                    //封装消息
+                                    msg->srcModuleID = NetPtr->ID;
+                                    memcpy(&msg->MessageID,clientObj->RecvBuff+clientObj->Recv_Head,4);
+                                    memcpy(&msg->dataSize,clientObj->RecvBuff+clientObj->Recv_Head+4,4);
+                                    memcpy(&msg->data,clientObj->RecvBuff+clientObj->Recv_Head+8,msg->dataSize);
+
+                                    //将数据放入模块管理器的消息队列
+                                    __ModuleManager->pushDataMessageQueue(msg);
+                                    clientObj->Recv_Head += 8;
+                        }
+                        if(clientObj->Recv_Head == clientObj->Recv_Tail)
+                        {
+                            clientObj->Recv_Head = 0;
+                            clientObj->Recv_Tail = 0;
+                        }
+                        
 
 
 
@@ -112,7 +112,7 @@ void IOThread::ThreadRun(NetModule* np)
                   else if(recvSize == 0)
                   {
                     Log(INFO, "连接断开" +    str(epollEvents[i].data.fd) + "  " +  str(NetPtr->OnlineTcpClients.size())+ "  " +  str(NetPtr->ClientObjPool.size()));
-                   NetPtr->CloseSocketData(epollEvents[i].data.fd);
+                    NetPtr->CloseSocketData(epollEvents[i].data.fd);
 
 
                   }

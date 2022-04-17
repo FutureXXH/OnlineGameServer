@@ -10,10 +10,6 @@ ModuleManager* __ModuleManager = nullptr;
  {
      ModuleBase* p =  new LuaModule(setid,FileName);
      RegisterModule(p);
-
-
-
-
 	 return p;
 
 }
