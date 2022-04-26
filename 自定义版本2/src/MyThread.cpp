@@ -18,6 +18,11 @@ void ModuleThread::ThreadRun()
 
        switch (ModulePtr->ModuleState)
 	   {
+	   case MODULE_ERROR:
+	   {
+		   
+	   }
+	   break;
 	   case MODULE_INIT:
 	   {
 		   	ModulePtr->Init();
@@ -64,11 +69,6 @@ ThreadManager::ThreadManager(int SetModuleThreadNum)
 
 void ThreadManager::StartThread()
 {
-
-	 Log = bind(&ConsoleLog::push_ConsoleLog,__ConsoleLog,placeholders::_1,placeholders::_2);
-	ConsoleThreadPtr = new thread(&ConsoleLog::ConsoleThreadRun,__ConsoleLog);
-	this_thread::sleep_for(chrono::seconds(1));
-    Log(INFO,"服务器控制台初始化完毕");
 
 
 	if (__ModuleManager == nullptr)

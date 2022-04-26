@@ -50,7 +50,7 @@ private:
     //控制台线程指针
 	thread* ConsoleThreadPtr;
 
-
+   friend void InitServer(int ThreadNum);
 
 
 public:

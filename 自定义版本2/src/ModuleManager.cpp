@@ -70,7 +70,8 @@ void ModuleManager::AssignData()
     while (m != nullptr)
     {
 
-        //给模块管理器的消息
+        //给模块管理器的消息 ID 0
+        //模块删除是单线程的，所以不用担心模块删除造成悬空指针问题
         if(m->MessageID == 0)
         {
               parseSelfMessage(m);
@@ -92,9 +93,8 @@ void ModuleManager::AssignData()
 
 
 }
-#define ReLoadLuaModule 3
-#define DeleteModule 4
-#define LoadLuaModule 2
+
+
 void ModuleManager::parseSelfMessage(Message* m)
 {
     switch (m->srcModuleID)
@@ -102,7 +102,6 @@ void ModuleManager::parseSelfMessage(Message* m)
     case LoadLuaModule:
     {
            int ModuleID = -1;
-
            memcpy(&ModuleID,m->data,4);
            string filename;
            filename.assign(m->data+4,m->dataSize-4);

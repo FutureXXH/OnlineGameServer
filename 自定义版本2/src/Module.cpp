@@ -53,8 +53,9 @@ if(!lua_isstring(L,2))
 	return -1;
 }
 string str = lua_tolstring(L,2,&strlen);
-m->dataSize = (int)strlen;
-memcpy(m->data,str.c_str(),strlen);
+
+m->writeData(str.c_str(),strlen);
+
 //获取第三个参数
 if(!lua_isinteger(L,3))
 {
@@ -72,6 +73,64 @@ __ModuleManager->pushDataMessageQueue(m);
 
 
 
+int LuaModule::LuaLoadModule(lua_State *L)
+{
+int num = lua_gettop(L);
+//获取第一个参数
+if(!lua_isinteger(L,1))
+{
+	lua_pushinteger(L,-1);
+	return -1;
+}
+int ID = lua_tointeger(L,1);
+
+size_t strlen = 0;
+//获取第二个参数
+if(!lua_isstring(L,2))
+{
+	lua_pushinteger(L,-1);
+	return -1;
+}
+
+
+Message* m = __ModuleManager->GetMessageObj();
+m->MessageID = 0;
+m->srcModuleID = LoadLuaModule;
+
+
+string str = lua_tolstring(L,2,&strlen);
+
+
+m->writeData(ID);
+m->writeData(str.c_str(),strlen);
+
+
+
+__ModuleManager->pushDataMessageQueue(m);
+
+}
+
+int LuaModule::LuaCloseModule(lua_State *L)
+{
+   int num = lua_gettop(L);
+    //获取第一个参数
+   if(!lua_isinteger(L,1))
+   {
+	lua_pushinteger(L,-1);
+	return -1;
+   }
+   int ID = lua_tointeger(L,1);
+
+    Message* m = __ModuleManager->GetMessageObj();
+    m->MessageID = 0;
+    m->srcModuleID = DeleteModule;
+
+
+   m->writeData(ID);
+   __ModuleManager->pushDataMessageQueue(m);
+
+
+}
 
 
 
@@ -96,7 +155,14 @@ LuaModule::LuaModule(int setID,string FileName)
 	//打开lua文件
     if(!OpenLuaFile())
 	{
-		ModuleState = MODULE_CLOSING;
+		
+      auto m = __ModuleManager->GetMessageObj();
+       if(m == nullptr)return;
+         this->ModuleState = MODULE_ERROR;
+        m->MessageID= 0;
+	    m->writeData(ID);
+       m->srcModuleID = DeleteModule;
+       __ModuleManager->pushDataMessageQueue(m);
 	}
 }
 
@@ -110,11 +176,13 @@ void LuaModule::InitLua()
    luaL_Reg lualibs[] = {
     {"SendMessage",LuaSendMessage},
 	{"RegMessage",LuaRegMessage},
+	{"LoadNewModule",LuaLoadModule},
+	{"CloseModule",LuaCloseModule},
     {NULL,NULL}
    };
 
    luaL_newlib(luaPtr,lualibs);
-   lua_setglobal(luaPtr,"GameServerLuaLib");
+   lua_setglobal(luaPtr,"ServerLuaLib");
 
 }
 
@@ -198,8 +266,9 @@ void LuaModule::CloseLua()
 
 ModuleBase::~ModuleBase()
 {
-
+    //释放消息对象数据
 	delete[] MessageMemoryPtr;
+	
 }
 ModuleBase::ModuleBase()
 {

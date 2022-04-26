@@ -1,7 +1,7 @@
 #include "../include/ConsoleCmd.h"
-ConsoleCMD * __ConsoleCMD = new ConsoleCMD();
- ConsoleLog *__ConsoleLog = new ConsoleLog();
 
+   ConsoleCMD * __ConsoleCMD = nullptr;
+    ConsoleLog *__ConsoleLog = nullptr;
 
 
 
@@ -106,6 +106,7 @@ void ConsoleLog::ConsoleThreadRun()
 {
     unique_lock<mutex> lock(m);
     string str;
+    Log(INFO,"服务器控制台初始化完毕");
     while (true)
     {
         cv.wait(lock);
@@ -115,6 +116,8 @@ void ConsoleLog::ConsoleThreadRun()
             cout <<str << endl;
         }
    }
+
+
     
 }
 

@@ -25,13 +25,20 @@ using uint8 = unsigned char;
 
 #define str(x) to_string(x) 
 
+
+#define DataBufferSize 1024
 //消息数据定义
-struct Message
+class Message
 {
+private:
+   int Data_head = 0;
+   int Data_Tail = 0;
+
+public:
 	int32 srcModuleID;
 	int32 MessageID;
 	uint32 dataSize;
-	char data[1024] ;
+	char data[DataBufferSize] ;
 
 
 
@@ -48,6 +55,8 @@ struct Message
 		MessageID = -1;
 		dataSize = 0;
 		srcModuleID = -1;
+		Data_head = 0;
+		Data_Tail = 0;
 		memset(data,0,1024);
 		return true;
 	}
@@ -67,12 +76,60 @@ struct Message
 		memcpy(data, m.data, dataSize);
 		return *this;
 	}
+    template<class T>
+	bool writeData(const T& writedata);
+
+	bool writeData(const char *buffer,int size);
+
+	template<class T>
+	bool readData( T& writedata);
+
+	bool readData(char *buffer,int size);
 };
 
 
 
+template<class T>
+inline bool Message::writeData(const T& writedata)
+{
+	if(Data_Tail+sizeof(writedata) >= DataBufferSize)return false;
+	
+    memcpy(data+Data_Tail,(char*)&writedata,sizeof(writedata));
+    Data_Tail += sizeof(writedata);
+	dataSize += sizeof(writedata);
+	return true;
+}
+
+inline bool Message::writeData(const char *buffer,int size)
+{
+	if(Data_Tail+size >= DataBufferSize)return false;
+	
+    memcpy(data+Data_Tail,buffer,size);
+    Data_Tail += size;
+	dataSize += size;
+	return true;
+}
 
 
+template<class T>
+inline bool Message::readData( T& writedata)
+{
+	if(Data_head+sizeof(writedata) > dataSize)return false;
+	
+    memcpy(&writedata,data+Data_head,sizeof(writedata));
+    Data_head += sizeof(writedata);
+	return true;
+}
+
+
+inline bool Message::readData(char *buffer,int size)
+{
+	if(Data_head+size > dataSize)return false;
+	
+    memcpy(buffer,data+Data_head,size);
+    Data_head += size;
+	return true;
+}
 
 
 

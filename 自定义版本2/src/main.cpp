@@ -16,8 +16,15 @@ using namespace chrono;
 
 void InitServer(int ThreadNum)
 {
+    __ConsoleCMD = new ConsoleCMD();
+    __ConsoleLog = new ConsoleLog();
     __ModuleManager = new ModuleManager();
 	__ThreadManager = new ThreadManager(ThreadNum);
+
+	Log = bind(&ConsoleLog::push_ConsoleLog,__ConsoleLog,placeholders::_1,placeholders::_2);
+	__ThreadManager->ConsoleThreadPtr = new thread(&ConsoleLog::ConsoleThreadRun,__ConsoleLog);
+	this_thread::sleep_for(chrono::seconds(1));
+  
 }
 
 
@@ -37,21 +44,23 @@ int main()
 	  
 
 
-
 	 //===============================================================
+
+	//Lua 模块
+    ModuleBase* luaM1 = __ModuleManager->Generate_LuaModule(1,"LuaStart.lua");
+
      //C++模块 网络模块
 	 ModuleBase* NetM = __ModuleManager->Generate_CModule<NetModule>(1000);
-	//Lua模块
-    ModuleBase* luaM1 = __ModuleManager->Generate_LuaModule(2000,"lua1.lua");
-    ModuleBase* luaM2 = __ModuleManager->Generate_LuaModule(3000,"lua2.lua");
+
+ 
 
 
     
-	ThreadManager* tm = new ThreadManager(2);
-	tm->StartThread();
+
 
 	//================================================================
 
+	__ThreadManager->StartThread();
 
     while (true)
 	{

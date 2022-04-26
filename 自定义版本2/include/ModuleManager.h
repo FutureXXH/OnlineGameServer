@@ -11,9 +11,16 @@
 
 #define REGMASSAGE  -3
 
+#define MODULE_ERROR -1//模块错误状态  不久可能就会自动删除
 #define MODULE_INIT 0  //模块初始化状态 会执行Init函数
 #define MODULE_RUNING 1  //模块运行状态 会执行update 与消息处理函数
 #define MODULE_CLOSING 2 //模块即将关闭状态 会运行Exit函数 然后注销模块
+
+
+#define LoadLuaModule 2
+#define ReLoadLuaModule 3
+#define DeleteModule 4
+
 
 
 
@@ -96,6 +103,10 @@ public:
 	bool ReloadLua();
     //关闭Lua虚拟机
 	void CloseLua();
+	//Lua中加载模块
+	 static int  LuaLoadModule(lua_State *L);
+	//Lua中加关闭模块
+	 static int  LuaCloseModule(lua_State *L);
 	//发送消息
     static int LuaSendMessage(lua_State *L);
     //注册消息
