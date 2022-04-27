@@ -49,7 +49,6 @@ ConsoleLog：控制台日志类 用于输出日志 (在单独的一个线程中�
 
 
 
- 出现"cannot find /usr/bin/ld" -llua 需要把lua中的liblua.a 文件复制到 /usr/lib64
 
 
 ## 自定义版本V1版（old） （WINDOWS IOCP多线程TCP自定义游戏联机服务器框架 配合DB服务器 ）
