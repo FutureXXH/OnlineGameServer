@@ -23,7 +23,7 @@ ModuleManager:  生成与管理Module的类，自身有一个全局消息队列,
 
 ModuleBase: 模块基类 写模块时继承该类 需要覆写Init(初始化运行函数),update(每循环运行),parseMessage(解析消息函数)。生成出来的对象会自动注册到ModuleManager中进行管理。
 
-ThreadManager：线程管理类 管理处理模块的线程 通过该类开启整个模块功能
+ThreadManager：线程管理类 管理处理模块的线程 通过该类开启整个服务器运行线程
 
 ConsoleCmd: 控制台指令类 在主线程运行 用于注册/解析控制台指令
 
