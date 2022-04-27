@@ -65,7 +65,7 @@ ServerLuaLib.GetTime();
 
 
 
-## 自定义版本V1版（old） （WINDOWS IOCP多线程TCP自定义游戏联机服务器框架 配合DB服务器 ）
+## 自定义版本V1版（old已弃坑） （WINDOWS IOCP多线程TCP自定义游戏联机服务器框架 配合DB服务器 ）
 
 
 ### 特点：
