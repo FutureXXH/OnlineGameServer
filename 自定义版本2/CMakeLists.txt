@@ -16,6 +16,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g")
 add_executable(GameServer ${DIR_SOURCE} ${DIR_MODULE})
 
 
-
-target_link_libraries(GameServer liblua.a)
+target_link_libraries(GameServer ${CMAKE_CURRENT_SOURCE_DIR}/lua/liblua.a)
 target_link_libraries(GameServer dl)
