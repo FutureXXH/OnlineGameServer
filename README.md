@@ -50,12 +50,16 @@ ConsoleLog：控制台日志类 用于输出日志 (在单独的一个线程中�
 #### lua注册的API
 注册消息
 ServerLuaLib.RegMessage(消息ID,模块ID)
+
 关闭模块
 ServerLuaLib.CloseModule(模块ID);
+
 加载模块
 ServerLuaLib.LoadNewModule(模块ID,模块文件名)
+
 发送消息
 ServerLuaLib.SendMessage(消息ID,数据,发送源模块ID);
+
 获取时间戳
 ServerLuaLib.GetTime();
 
