@@ -15,7 +15,7 @@ void ModuleThread::ThreadRun()
 		auto ModulePtr = __ModuleManager->ThreadModuleQueue.pop();
 		if(ModulePtr == nullptr)continue;
 
-
+    
        switch (ModulePtr->ModuleState)
 	   {
 	   case MODULE_ERROR:
@@ -33,6 +33,7 @@ void ModuleThread::ThreadRun()
 	   case MODULE_RUNING:
 	   {
 		   ModulePtr->parseQueue();
+		   //传入时间戳 毫秒
 		    ModulePtr->update();
           __ModuleManager->ThreadModuleQueue.push(ModulePtr);
 	   }

@@ -7,6 +7,7 @@
 #include "ConsoleCmd.h"
 #include <mutex>
 #include <unordered_set>
+#include <chrono>
 
 
 #define REGMASSAGE  -3
@@ -69,7 +70,7 @@ public:
 
     //获取一个消息对象
 	Message* GetMessageObj();
-
+   
 
 	//放回一个消息对象
 	bool PushMessageObj(Message* obj);
@@ -82,6 +83,8 @@ public:
 	virtual void parseMessage(Message* messagePtr) = 0;
 	//模块退出执行
 	virtual void Exit() = 0;
+     //获取时间戳
+	static int64 GetTimeStamp();
 
 };
 
@@ -111,6 +114,9 @@ public:
     static int LuaSendMessage(lua_State *L);
     //注册消息
     static int LuaRegMessage(lua_State *L);
+     //lua获取时间戳
+	static int LuaGetTimeStamp(lua_State *L);
+
 	//一直循环处理
 	virtual void update();
 	//初始化函数 开启服务器时调用
@@ -119,6 +125,7 @@ public:
 	virtual void parseMessage(Message* messagePtr);
 	//模块退出执行
 	virtual void Exit();
+
 
 };
 

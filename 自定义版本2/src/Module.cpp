@@ -132,6 +132,18 @@ int LuaModule::LuaCloseModule(lua_State *L)
 
 }
 
+int LuaModule::LuaGetTimeStamp(lua_State *L)
+{
+ 
+
+ lua_pushinteger(L,GetTimeStamp());
+ return 1;
+
+
+}
+
+
+
 
 
 bool LuaModule::ReloadLua()
@@ -143,6 +155,8 @@ bool LuaModule::ReloadLua()
 	}
 	//执行初始函数
 	Init();
+   
+   
 }
 
 
@@ -178,11 +192,15 @@ void LuaModule::InitLua()
 	{"RegMessage",LuaRegMessage},
 	{"LoadNewModule",LuaLoadModule},
 	{"CloseModule",LuaCloseModule},
+	{"GetTime",LuaGetTimeStamp},
     {NULL,NULL}
    };
 
    luaL_newlib(luaPtr,lualibs);
    lua_setglobal(luaPtr,"ServerLuaLib");
+
+
+  
 
 }
 
@@ -278,6 +296,12 @@ ModuleBase::ModuleBase()
 	{
 		MessageObjPool.push(&MessageMemoryPtr[i]);
 	}
+}
+
+
+int64 ModuleBase::GetTimeStamp()
+{
+  return chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
 }
 
 void ModuleBase::parseQueue()
