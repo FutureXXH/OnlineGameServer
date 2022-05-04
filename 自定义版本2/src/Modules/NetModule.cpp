@@ -96,7 +96,7 @@ void IOThread::ThreadRun(NetModule* np)
 
                                     //将数据放入模块管理器的消息队列
                                     __ModuleManager->pushDataMessageQueue(msg);
-                                    clientObj->Recv_Head += 8;
+                                    clientObj->Recv_Head += 8 + msg->dataSize;
                         }
                         if(clientObj->Recv_Head == clientObj->Recv_Tail)
                         {
