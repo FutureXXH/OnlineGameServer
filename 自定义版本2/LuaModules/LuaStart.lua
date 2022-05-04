@@ -24,7 +24,7 @@ function OnInit(id)
 end
 
 --一直调用
-function OnUpdate(timeStamp)
+function OnUpdate()
    
  
 end
