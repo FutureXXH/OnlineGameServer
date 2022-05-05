@@ -92,6 +92,11 @@ void IOThread::ThreadRun(NetModule* np)
                                     msg->srcModuleID = NetPtr->ID;
                                     memcpy(&msg->MessageID,clientObj->RecvBuff+clientObj->Recv_Head,4);
                                     memcpy(&msg->dataSize,clientObj->RecvBuff+clientObj->Recv_Head+4,4);
+                                    if(clientObj->Recv_Head + 8 + msg->dataSize > clientObj->Recv_Tail)
+                                    {
+                                        clientObj->Recv_Head--;
+                                        break;
+                                    }
                                     memcpy(&msg->data,clientObj->RecvBuff+clientObj->Recv_Head+8,msg->dataSize);
 
                                     //将数据放入模块管理器的消息队列
