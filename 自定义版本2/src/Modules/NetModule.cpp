@@ -88,8 +88,9 @@ void IOThread::ThreadRun(NetModule* np)
                     if(recvSize > 0)
                     {
                         clientObj->Recv_Tail += recvSize;
-                        while (true)
+                        while (clientObj->Recv_Head  < clientObj->Recv_Tail)
                         {
+                               
                                 //判断头
                                 while(clientObj->RecvBuff[clientObj->Recv_Head] != '&')
                                 {
@@ -128,7 +129,7 @@ void IOThread::ThreadRun(NetModule* np)
                                     __ModuleManager->pushDataMessageQueue(msg);
                                     clientObj->Recv_Head += 8 + msg->dataSize;
                         }
-                        if(clientObj->Recv_Head == clientObj->Recv_Tail)
+                        if(clientObj->Recv_Head >= clientObj->Recv_Tail)
                         {
                             clientObj->Recv_Head = 0;
                             clientObj->Recv_Tail = 0;
