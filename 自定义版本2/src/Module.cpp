@@ -1,6 +1,36 @@
 #include "../include/ModuleManager.h"
 
 
+
+int LuaModule::LuaLog(lua_State *L)
+{
+	int num = lua_gettop(L);
+	if(!lua_isstring(L,1))
+	{
+		lua_pushinteger(L,-1);
+		return -1;
+	}
+	string LogLevel = lua_tostring(L,1);
+	
+
+	if(!lua_isstring(L,2))
+	{
+		lua_pushinteger(L,-1);
+		return -1;
+	}
+	string Loginfo = lua_tostring(L,2);
+
+	if(LogLevel == "INFO")
+	Log(INFO,Loginfo);
+	else if(LogLevel == "WARNING")
+	Log(WARNING,Loginfo);
+	else if(LogLevel == "ERROR")
+	Log(ERROR,Loginfo);
+
+       return 1;
+}
+
+
 int LuaModule::LuaRegMessage(lua_State *L)
 {
  int num = lua_gettop(L);
@@ -201,6 +231,7 @@ void LuaModule::InitLua()
 	{"LoadNewModule",LuaLoadModule},
 	{"CloseModule",LuaCloseModule},
 	{"GetTime",LuaGetTimeStamp},
+	{"Log",LuaLog},
     {NULL,NULL}
    };
 

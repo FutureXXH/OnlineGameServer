@@ -12,12 +12,14 @@ i = i or 0
 --ServerLuaLib.SendMessage(消息ID,数据,发送源模块ID,目标模块ID);目标模块ID填-1则发送给所有注册该消息的模块
 --获取时间戳
 --ServerLuaLib.GetTime();
+--输出日志
+--ServerLuaLib.Log(级别,消息)  (INFO,WARNING,ERROR);
 
 
 --在模块加载后调用 传入了模块ID号
 function OnInit(id)
     ID = id
-    print("[Lua]: luaManager初始化成功  ID: "..ID)
+    ServerLuaLib.Log("INFO","[Lua]: luaManager初始化成功  ID: "..ID)
     --在lua中加载模块
     --ServerLuaLib.LoadNewModule(2000,"GameRoom.lua")
 

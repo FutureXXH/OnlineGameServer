@@ -320,7 +320,7 @@ bool NetModule::CloseSocketData(Socket sock)
 {
 	switch (messagePtr->MessageID)
     {
-    case 102:
+    case 102://向某client发送消息
         {
          
             // sock + head + size + buffer

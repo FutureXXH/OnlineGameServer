@@ -116,6 +116,8 @@ public:
     static int LuaRegMessage(lua_State *L);
      //lua获取时间戳
 	static int LuaGetTimeStamp(lua_State *L);
+	//lua 日志输出
+	static int LuaLog(lua_State *L);
 
 	//一直循环处理
 	virtual void update();
