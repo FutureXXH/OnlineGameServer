@@ -1,5 +1,27 @@
 #include "../../include/NetModule.h"
 
+
+void TCPClient::Send(int head,char* buff,int size)
+{
+    char* Sendbuffer = new char[1024];
+    Sendbuffer[0] = '&';
+    memcpy(Sendbuffer+1,(char*)&head,4);
+    memcpy(Sendbuffer+5,(char*)&size,4);
+    memcpy(Sendbuffer+9,buff,size);
+   send(this->clientSocket,Sendbuffer,size+9,0);
+   Log(INFO,"发送数据：" + str(this->clientSocket)+ " 大小" + str(size));
+}
+
+
+
+
+
+
+
+
+
+
+
 //============================IOThread=========================================
 
 
@@ -95,9 +117,12 @@ void IOThread::ThreadRun(NetModule* np)
                                     if(clientObj->Recv_Head + 8 + msg->dataSize > clientObj->Recv_Tail)
                                     {
                                         clientObj->Recv_Head--;
+                                         __ModuleManager->PushMessageObj(msg);
                                         break;
                                     }
-                                    memcpy(&msg->data,clientObj->RecvBuff+clientObj->Recv_Head+8,msg->dataSize);
+                                    msg->writeData(clientObj->clientSocket);
+                                    msg->writeData(clientObj->RecvBuff+clientObj->Recv_Head+8,msg->dataSize);
+                                    //memcpy(&msg->data,clientObj->RecvBuff+clientObj->Recv_Head+8,msg->dataSize);
 
                                     //将数据放入模块管理器的消息队列
                                     __ModuleManager->pushDataMessageQueue(msg);
@@ -242,12 +267,21 @@ bool NetModule::PushClientObj(TCPClient* obj)
 bool NetModule::CloseSocketData(Socket sock)
 {
         unique_lock<mutex> lock(NetMutex);
+        {
         auto clientObj = GetClientObj(sock);
         if(clientObj == nullptr)return false;
         close(sock);
         epoll_ctl(epollfd,EPOLL_CTL_DEL,sock,NULL);
         delelte_ClientObj_Map(clientObj->clientSocket);
         PushClientObj(clientObj);
+        }
+        Message* msg = __ModuleManager->GetMessageObj();
+        msg->srcModuleID = this->ID;
+        msg->MessageID = 101;
+        msg->writeData(sock);
+        __ModuleManager->pushDataMessageQueue(msg);
+
+        
        return true;
 }
 
@@ -265,13 +299,14 @@ bool NetModule::CloseSocketData(Socket sock)
 
  void NetModule::Init()
  {
+     signal(SIGPIPE,SIG_IGN);
     Log(INFO,"初始化模块"+ str(ID));
      
      for (int i = 0; i < MaxClient; i++)
      {
          ClientObjPool.push(new TCPClient());
      }
-     
+     RegisterMessageID(102);
 
 
      TcpServerInit(5678);
@@ -283,7 +318,33 @@ bool NetModule::CloseSocketData(Socket sock)
 
  void NetModule::parseMessage(Message* messagePtr)
 {
-	
+	switch (messagePtr->MessageID)
+    {
+    case 102:
+        {
+         
+            // sock + head + size + buffer
+             int sock = -1;
+             int size = 0;
+             int head = 0;
+             char *buffer = new char[512];
+             messagePtr->readData(sock);
+              messagePtr->readData(head);
+             messagePtr->readData(size);
+
+             
+             if(size >= 512)return;
+            
+             messagePtr->readData(buffer,size);
+             TCPClient* clientobj = GetClientObj(sock);
+             if(clientobj == nullptr)return ;
+              clientobj->Send(head,buffer,size);
+        }
+        break;
+    
+    default:
+        break;
+    }
 	
 
 }

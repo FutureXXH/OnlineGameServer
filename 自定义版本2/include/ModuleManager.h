@@ -170,7 +170,7 @@ private:
 	bool reloadLuaModule(int32 moduleID);
 	//删除一个模块
 	 bool deleteModule(int id);
-
+	bool pushMessageToModule(Message* m, int32 ModuleID);
 public:
     ThreadSafe_Queue<ModuleBase*> ThreadModuleQueue;
 
@@ -194,7 +194,7 @@ public:
 	//推送数据到数据队列 会拷贝消息数据 
 	bool pushDataMessageQueue(Message* m);
 	//推送消息给指定模块队列  会拷贝消息数据 
-	bool pushMessageToModule(Message* m, int32 ModuleID);
+
 	//===========================================
     //注册控制台指令
 	void reg_ConsoleCMD();

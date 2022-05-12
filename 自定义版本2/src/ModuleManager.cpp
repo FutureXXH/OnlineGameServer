@@ -76,6 +76,10 @@ void ModuleManager::AssignData()
         {
               parseSelfMessage(m);
         }
+        else if(m->aimModuleID != -1)
+        {
+            pushMessageToModule(m,m->aimModuleID);
+        }
         else if (MessageTable.count(m->MessageID) != 0)
         {
 

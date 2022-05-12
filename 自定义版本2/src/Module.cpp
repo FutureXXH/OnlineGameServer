@@ -52,9 +52,11 @@ if(!lua_isstring(L,2))
 	lua_pushinteger(L,-1);
 	return -1;
 }
-string str = lua_tolstring(L,2,&strlen);
+const char* str = lua_tolstring(L,2,&strlen);
 
-m->writeData(str.c_str(),strlen);
+
+
+m->writeData(str,strlen);
 
 //获取第三个参数
 if(!lua_isinteger(L,3))
@@ -64,7 +66,13 @@ if(!lua_isinteger(L,3))
 }
 m->srcModuleID = lua_tointeger(L,3);
 
-
+//获取第四个参数
+if(!lua_isinteger(L,3))
+{
+	lua_pushinteger(L,-1);
+	return -1;
+}
+m->aimModuleID = lua_tointeger(L,4);
 
 __ModuleManager->pushDataMessageQueue(m);
 

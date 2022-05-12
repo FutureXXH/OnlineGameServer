@@ -35,6 +35,7 @@ private:
    int Data_Tail = 0;
 
 public:
+    int32 aimModuleID;//目标模块ID 如果为-1 就转发给所有
 	int32 srcModuleID;
 	int32 MessageID;
 	uint32 dataSize;
@@ -52,6 +53,7 @@ public:
 	}
 	bool reset()
 	{
+		aimModuleID= -1;
 		MessageID = -1;
 		dataSize = 0;
 		srcModuleID = -1;
@@ -63,6 +65,7 @@ public:
 
 	Message(const Message& m)
 	{
+		aimModuleID = m.aimModuleID;
 		MessageID = m.MessageID;
 		dataSize = m.dataSize;
 		srcModuleID = m.srcModuleID;
@@ -70,6 +73,7 @@ public:
 	}
 	Message& operator=(const Message& m) 
 	{
+		aimModuleID = m.aimModuleID;
 		MessageID = m.MessageID;
 		dataSize = m.dataSize;
 		srcModuleID = m.srcModuleID;
