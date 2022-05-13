@@ -307,8 +307,9 @@ bool NetModule::CloseSocketData(Socket sock)
      {
          ClientObjPool.push(new TCPClient());
      }
+     //注册消息
      RegisterMessageID(102);
-
+    RegisterMessageID(103);
 
      TcpServerInit(5678);
      EpollInit();
@@ -341,6 +342,15 @@ bool NetModule::CloseSocketData(Socket sock)
              if(clientobj == nullptr)return ;
               clientobj->Send(head,buffer,size);
         }
+        break;
+    case 103://强制关闭某client 连接
+    {
+      
+        int sock = -1;
+         messagePtr->readData(sock);
+           Log(INFO, "强制断开" + str(sock));
+          CloseSocketData(sock);
+    }
         break;
     
     default:

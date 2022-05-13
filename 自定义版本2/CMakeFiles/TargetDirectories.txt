@@ -1,3 +1,0 @@
-/home/xuxinhao/Code/GameServerGit/TCPOnlineGameServer/自定义版本2/CMakeFiles/rebuild_cache.dir
-/home/xuxinhao/Code/GameServerGit/TCPOnlineGameServer/自定义版本2/CMakeFiles/edit_cache.dir
-/home/xuxinhao/Code/GameServerGit/TCPOnlineGameServer/自定义版本2/CMakeFiles/GameServer.dir
