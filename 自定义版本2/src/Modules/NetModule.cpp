@@ -313,7 +313,7 @@ bool NetModule::CloseSocketData(Socket sock)
 
      TcpServerInit(5678);
      EpollInit();
-     EpollThreadInit(5);
+     EpollThreadInit(3);
     Log(INFO,"网络模块初始化完成"+ str(ID));
 
  }

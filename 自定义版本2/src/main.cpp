@@ -40,7 +40,7 @@ int main()
 {
      ios::sync_with_stdio(false);
 	 cout.tie(0);
-     InitServer(2);
+     InitServer(4);
 	  
 
 

@@ -347,8 +347,11 @@ void ModuleBase::parseQueue()
 {
 	Message* p = nullptr;
 	p = MessageQueue.pop();
-	while (p != nullptr)
+	//时间分配调度 防止一直处理消息 默认20毫秒
+	long long startTime = GetTimeStamp();
+	while (p != nullptr&&(GetTimeStamp() - startTime < 20))
 	{
+
 		parseMessage(p);
         
 		//放回对象池中
