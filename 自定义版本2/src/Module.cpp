@@ -87,7 +87,7 @@ const char* str = lua_tolstring(L,2,&strlen);
 
 
 m->writeData(str,strlen);
-
+m->dataSize = strlen;
 //获取第三个参数
 if(!lua_isinteger(L,3))
 {
@@ -284,12 +284,12 @@ bool LuaModule::OpenLuaFile()
  void LuaModule::parseMessage(Message* messagePtr)
  {
  
-
 	
 	 lua_getglobal(luaPtr,"OnParseMessage");
 	 lua_pushinteger(luaPtr,messagePtr->MessageID);
      lua_pushlstring(luaPtr,messagePtr->data,messagePtr->dataSize);
 	 lua_pushinteger(luaPtr,messagePtr->srcModuleID);
+
 	int iserr = lua_pcall(luaPtr,3,0,0);
 	if(iserr)
 	{
