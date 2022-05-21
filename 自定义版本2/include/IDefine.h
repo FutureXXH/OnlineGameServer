@@ -2,7 +2,7 @@
 #define __IDEFINE_H
 #include <string.h>
 #include <thread>
-
+#include <iostream>
 extern "C"
 {
 #include "../lua/lua.h"

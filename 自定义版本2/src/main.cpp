@@ -50,7 +50,7 @@ int main()
      //C++模块 网络模块
 	 ModuleBase* NetM = __ModuleManager->Generate_CModule<NetModule>(1000,true);
 	//Lua 模块
-    ModuleBase* luaM1 = __ModuleManager->Generate_LuaModule(1,"LuaStart.lua");
+     ModuleBase* luaM1 = __ModuleManager->Generate_LuaModule(1,"LuaStart.lua");
 
 
 

@@ -7,10 +7,11 @@ void ModuleThread::ThreadRun()
 {
 	Log(INFO,"模块处理线程开启: "+str(ID));
 
-    ModuleBase* ModulePtr ;
+    ModuleBase* ModulePtr  = nullptr;
     //线程调度
 	while (true)
 	{
+		
 		//从模块队列中取出模块进行处理
 		if(IsSpecialTheard)
 		{
@@ -22,9 +23,12 @@ void ModuleThread::ThreadRun()
 		}
 		else
 		{
+			
 		    ModulePtr = __ModuleManager->ThreadModuleQueue.pop();
 		   if(ModulePtr == nullptr)continue;
+		  
 		}
+		 
 
 
     
@@ -39,14 +43,17 @@ void ModuleThread::ThreadRun()
 	   {
 		   	ModulePtr->Init();
 			ModulePtr->ModuleState = MODULE_RUNING;
+			if(!IsSpecialTheard)
 			__ModuleManager->ThreadModuleQueue.push(ModulePtr);
 	   }
 		   break;
 	   case MODULE_RUNING:
 	   {
+		   
 		   ModulePtr->parseQueue();
 		   //传入时间戳 毫秒
 		    ModulePtr->update();
+			if(!IsSpecialTheard)
           __ModuleManager->ThreadModuleQueue.push(ModulePtr);
 	   }
 		   break;
@@ -98,6 +105,9 @@ void ThreadManager::StartThread()
 	//开启模块管理器线程
 	ModuleManagerThreadPtr = new thread(&ModuleManager::ManagerRun, __ModuleManager);
 	ModuleManagerThreadPtr->detach();
+
+
+	
 
     //对需要独占线程的模块开启线程
 	for (int i = 0; i < __ModuleManager->SpecialTheardReg.size(); i++)
