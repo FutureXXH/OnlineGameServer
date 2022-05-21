@@ -7,13 +7,25 @@ void ModuleThread::ThreadRun()
 {
 	Log(INFO,"模块处理线程开启: "+str(ID));
 
-
+    ModuleBase* ModulePtr ;
     //线程调度
 	while (true)
 	{
 		//从模块队列中取出模块进行处理
-		auto ModulePtr = __ModuleManager->ThreadModuleQueue.pop();
-		if(ModulePtr == nullptr)continue;
+		if(IsSpecialTheard)
+		{
+            ModulePtr = SpecialTheardModule;
+			if(ModulePtr == nullptr)
+			{
+				Log(ERROR,"模块处理线程" + str(ID) + "获取独占模块失败！");
+			}
+		}
+		else
+		{
+		    ModulePtr = __ModuleManager->ThreadModuleQueue.pop();
+		   if(ModulePtr == nullptr)continue;
+		}
+
 
     
        switch (ModulePtr->ModuleState)
@@ -45,6 +57,13 @@ void ModuleThread::ThreadRun()
 			ModulePtr->Exit();
 				
 			delete ModulePtr;
+
+			if(IsSpecialTheard)
+			{
+			Log(WARNING ,"线程"+ str(ID) + "退出");
+			return;
+			}
+
 	   }
 		   break;   
 	   default:
@@ -80,8 +99,20 @@ void ThreadManager::StartThread()
 	ModuleManagerThreadPtr = new thread(&ModuleManager::ManagerRun, __ModuleManager);
 	ModuleManagerThreadPtr->detach();
 
-	//==================================================================================
-	for (int i = 0; i < ModuleThreadNum; i++)
+    //对需要独占线程的模块开启线程
+	for (int i = 0; i < __ModuleManager->SpecialTheardReg.size(); i++)
+	{
+		ModuleThread* ModuleThreadp = new ModuleThread(i);
+		ModuleThreadp->IsSpecialTheard = true;
+		ModuleThreadp->SpecialTheardModule = __ModuleManager->SpecialTheardReg[i];
+		Pool.emplace_back(ModuleThreadp);
+		ModuleThreadp->myThread = new thread(&ModuleThread::ThreadRun, ModuleThreadp);
+		ModuleThreadp->myThread->detach();
+	}
+	
+
+	//共享模块线程开启
+	for (int i = __ModuleManager->SpecialTheardReg.size(); i < __ModuleManager->SpecialTheardReg.size()+ModuleThreadNum; i++)
 	{
 		ModuleThread* ModuleThreadp = new ModuleThread(i);
 		Pool.emplace_back(ModuleThreadp);

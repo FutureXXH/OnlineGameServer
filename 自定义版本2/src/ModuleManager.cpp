@@ -6,10 +6,10 @@ ModuleManager* __ModuleManager = nullptr;
 
 
 
- ModuleBase* ModuleManager::Generate_LuaModule(int setid,string FileName)
+ ModuleBase* ModuleManager::Generate_LuaModule(int setid,string FileName,bool SpecialTheard)
  {
      ModuleBase* p =  new LuaModule(setid,FileName);
-     RegisterModule(p);
+     RegisterModule(p,SpecialTheard);
 	 return p;
 
 }
@@ -46,11 +46,17 @@ bool ModuleManager::pushMessageToModule(Message* m, int32 moduleID)
     return true;
 }
 
-bool ModuleManager::RegisterModule(ModuleBase* mp)
+bool ModuleManager::RegisterModule(ModuleBase* mp,bool SpecialTheard)
 {
     if (mp == nullptr)return false;
     ModuleTable.emplace(mp->ID,mp);
+
+    if(!SpecialTheard) //如果独占线程话 就不加入进共用线程队列中
     ThreadModuleQueue.push(mp);
+    else
+    SpecialTheardReg.emplace_back(mp);
+
+
     return true;
 }
 

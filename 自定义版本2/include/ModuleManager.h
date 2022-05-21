@@ -176,7 +176,7 @@ private:
 public:
     ThreadSafe_Queue<ModuleBase*> ThreadModuleQueue;
 
-
+    vector<ModuleBase*>  SpecialTheardReg ;
 
 	//注册消息
 	bool RegisterMessage(int32 messageID, int32 moduleID);
@@ -192,7 +192,7 @@ public:
 	bool PushMessageObj(Message* obj);
 
 	//注册模块
-	bool RegisterModule(ModuleBase* mp);
+	bool RegisterModule(ModuleBase* mp,bool SpecialTheard = false);
 	//推送数据到数据队列 会拷贝消息数据 
 	bool pushDataMessageQueue(Message* m);
 	//推送消息给指定模块队列  会拷贝消息数据 
@@ -202,32 +202,31 @@ public:
 	void reg_ConsoleCMD();
 	//===========================================
 
-    //生成C++模块
+    //生成C++模块   SpecialTheard参数来确定是否专门开一个线程处理这个模块，否则共享线程处理
 	template<class T>
-	 ModuleBase* Generate_CModule(int setid);
+	 ModuleBase* Generate_CModule(int setid,bool SpecialTheard = false);
     //生成Lua模块
-	 ModuleBase* Generate_LuaModule(int setid,string FileName);
+	 ModuleBase* Generate_LuaModule(int setid,string FileName,bool SpecialTheard = false);
 
 
 };
 
 template<class T>
-inline ModuleBase* ModuleManager::Generate_CModule(int setid)
+inline ModuleBase* ModuleManager::Generate_CModule(int setid,bool SpecialTheard )
 {
-
 
     ModuleBase* p =  new T();
 
     p->ID = setid;
 
-	RegisterModule(p);
+	RegisterModule(p,SpecialTheard);
     
     return p;
 }
  
 //不能使用该生成C模块的函数生成lua模块 返回空指针
 template<>
-inline ModuleBase* ModuleManager::Generate_CModule<LuaModule>(int setid)
+inline ModuleBase* ModuleManager::Generate_CModule<LuaModule>(int setid,bool SpecialTheard )
  {
     
    return nullptr;

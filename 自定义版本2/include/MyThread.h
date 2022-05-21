@@ -23,6 +23,9 @@ public:
     int ID;
 	//线程指针
     thread* myThread;
+
+	bool IsSpecialTheard = false;
+	ModuleBase * SpecialTheardModule = nullptr;
 	
 	//开始运行
 	void ThreadRun();
