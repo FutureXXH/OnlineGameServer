@@ -3,13 +3,13 @@
 
 void TCPClient::Send(int head,char* buff,int size)
 {
-    char* Sendbuffer = new char[1024];
+    char Sendbuffer[1024];
     Sendbuffer[0] = '&';
     memcpy(Sendbuffer+1,(char*)&head,4);
     memcpy(Sendbuffer+5,(char*)&size,4);
     memcpy(Sendbuffer+9,buff,size);
    send(this->clientSocket,Sendbuffer,size+9,0);
-   Log(INFO,"发送数据：" + str(this->clientSocket)+ " 大小" + str(size));
+  // Log(INFO,"发送数据：" + str(this->clientSocket)+ " 大小" + str(size));
 }
 
 
@@ -100,8 +100,8 @@ void IOThread::ThreadRun(NetModule* np)
                                 if(clientObj->Recv_Tail - clientObj->Recv_Head < 9)break;
                                 clientObj->Recv_Head += 1;
 
-                                    Log(INFO,"收到数据大小" + str(recvSize)  + " "+ str(clientObj->Recv_Head) +"|" + str(clientObj->Recv_Tail) + "  "
-                                    + str(NetPtr->OnlineTcpClients.size()) + "  " + str(NetPtr->ClientObjPool.size()));
+                                    //Log(INFO,"收到数据大小" + str(recvSize)  + " "+ str(clientObj->Recv_Head) +"|" + str(clientObj->Recv_Tail) + "  "
+                                    //+ str(NetPtr->OnlineTcpClients.size()) + "  " + str(NetPtr->ClientObjPool.size()));
                                     //获取一个消息对象
                                     auto msg = __ModuleManager->GetMessageObj();
                                     
@@ -149,6 +149,10 @@ void IOThread::ThreadRun(NetModule* np)
                   }
                   else{
                       Log(WARNING, "接收错误:" + str(recvSize));
+                      if(recvSize == -1)
+                      {
+                          NetPtr->CloseSocketData(epollEvents[i].data.fd);
+                      }
         
                   }
 
