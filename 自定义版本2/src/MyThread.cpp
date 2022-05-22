@@ -72,7 +72,19 @@ void ModuleThread::ThreadRun()
 			}
 
 	   }
-		   break;   
+		   break;  
+	  case MODULE_RELOAD:
+	  {
+		   auto p =  dynamic_cast<LuaModule*>(ModulePtr);
+          if(p == nullptr)
+           {
+            Log(ERROR,"重启模块异常2");
+             break;
+           }
+            p->ReloadLua();
+	  }
+
+		   break; 
 	   default:
 		   break;
 	   }

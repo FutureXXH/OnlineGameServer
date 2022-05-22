@@ -16,7 +16,7 @@
 #define MODULE_INIT 0  //模块初始化状态 会执行Init函数
 #define MODULE_RUNING 1  //模块运行状态 会执行update 与消息处理函数
 #define MODULE_CLOSING 2 //模块即将关闭状态 会运行Exit函数 然后注销模块
-
+#define MODULE_RELOAD 3 //模块重载
 
 #define LoadLuaModule 2
 #define ReLoadLuaModule 3

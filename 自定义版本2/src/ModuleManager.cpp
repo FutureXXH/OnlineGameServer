@@ -189,7 +189,7 @@ bool ModuleManager::reloadLuaModule(int32 moduleID)
        Log(ERROR,"重启模块异常");
       return false;
    }
-   p->ReloadLua();
+   p->ModuleState = MODULE_RELOAD;
    return true;
 
 }
