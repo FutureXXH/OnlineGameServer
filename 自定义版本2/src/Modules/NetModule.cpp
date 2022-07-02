@@ -345,6 +345,7 @@ bool NetModule::CloseSocketData(Socket sock)
              TCPClient* clientobj = GetClientObj(sock);
              if(clientobj == nullptr)return ;
               clientobj->Send(head,buffer,size);
+              delete [] buffer;
         }
         break;
     case 103://强制关闭某client 连接

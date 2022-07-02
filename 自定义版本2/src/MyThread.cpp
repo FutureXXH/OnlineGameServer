@@ -51,7 +51,7 @@ void ModuleThread::ThreadRun()
 	   {
 		   
 		   ModulePtr->parseQueue();
-		   //传入时间戳 毫秒
+		
 		    ModulePtr->update();
 			if(!IsSpecialTheard)
           __ModuleManager->ThreadModuleQueue.push(ModulePtr);
@@ -75,6 +75,7 @@ void ModuleThread::ThreadRun()
 		   break;  
 	  case MODULE_RELOAD:
 	  {
+		//强制转换指针
 		   auto p =  dynamic_cast<LuaModule*>(ModulePtr);
           if(p == nullptr)
            {

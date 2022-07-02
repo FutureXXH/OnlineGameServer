@@ -34,7 +34,7 @@ class ThreadManager;
 //模块抽象基类
 class ModuleBase
 {
-private:
+protected:
 
      //消息队列
 	ThreadSafe_Queue<Message*> MessageQueue;

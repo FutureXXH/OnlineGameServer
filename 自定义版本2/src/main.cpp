@@ -4,7 +4,7 @@
 #include "../include/ConsoleCmd.h"
 #include "../include/MyThread.h"
 #include "../include/NetModule.h"
-
+#include "../include/UDPNetModule.h"
 
 
 
@@ -48,7 +48,8 @@ int main()
 
 
      //C++模块 网络模块
-	 ModuleBase* NetM = __ModuleManager->Generate_CModule<NetModule>(1000,true);
+	// ModuleBase* NetM = __ModuleManager->Generate_CModule<NetModule>(1000,true); //使用TCP
+	 ModuleBase* NetM = __ModuleManager->Generate_CModule<UDPNetModule>(1000,true);//使用UDP
 	//Lua 模块
      ModuleBase* luaM1 = __ModuleManager->Generate_LuaModule(1,"LuaStart.lua");
 
