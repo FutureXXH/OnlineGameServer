@@ -41,6 +41,7 @@ using namespace std;
 #define DISCONNECT  0
 #define CONNECTING  1
 #define CONNECTED  2
+#define DISCONNECTING 3
 
 class UDPNetModule;
 
@@ -52,14 +53,17 @@ class UDPClient
     sockaddr_in clientAddr;
     int HeartTime;
 
+    Socket ServerSocket;
+
     inline void Reset()
     {
       State = DISCONNECT;
-      HeartTime= 0;
+      HeartTime= time(NULL);
       UDPClientID = -1;
+      memset(&clientAddr,0,sizeof(sockaddr_in));
     }
 
-    int Send(int head,char* buff,int size);
+    int Send(int head,uint8* buff,int size);
 
     static long long GetID(const sockaddr_in &clientAddr) ;
    
@@ -70,20 +74,25 @@ class UDPClient
 class UDPNetModule : public ModuleBase
 {
 private:
- int RecvThreadNum = 3;
-
+ int RecvThreadNum = 2;
+  thread* HeartThreadP;
   vector<thread*> RecvThreads;
   unordered_map<long long,UDPClient*> ClientList;
   
    ThreadSafe_Queue<UDPClient*> ClientObjPool;
   //开启网络接收线程
   void RunRecvThread();
+  //开启心跳检测线程
+  void RunHeartCheckThread();
+  
   //接收数据 
   void RecvData();
 
-  void DisConnect(int UDPClientID,int CMD);
+
   //连接  模拟tcp三次握手
   void Connect(Message* meg, sockaddr_in clientAddr);
+  //关闭连接
+  void CloseConnect(long long ClientID);
 
 
 public:

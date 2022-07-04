@@ -110,6 +110,7 @@ void ConsoleLog::ConsoleThreadRun()
     while (true)
     {
         cv.wait(lock);
+    
         while (console_Logs.size()> 0)
         {
             str =  pop_ConsoleLog();
