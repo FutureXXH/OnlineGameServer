@@ -24,7 +24,7 @@ int UDPClient::Send(int head,uint8* buff,int size)
 }
 
 //=================================================================
-UDPClient *UDPNetModule::GetUdpClient(int ID)
+UDPClient *UDPNetModule::GetUdpClient(long long ID)
 {
     if (ClientList.count(ID))
     {
@@ -87,7 +87,7 @@ void UDPNetModule::RunRecvThread()
                 memcpy(&msg->dataSize, buf + Head + 4, 4);
                 
 
-                cout << msg->MessageID <<"|" << msg->dataSize   << endl;
+               // cout << msg->MessageID <<"|" << msg->dataSize   << endl;
                
                 //判断数据是否接收完整 缺少直接当丢失处理
                 if (Head + 8 + msg->dataSize > Tail)
@@ -100,10 +100,27 @@ void UDPNetModule::RunRecvThread()
 
                 if (msg->MessageID == 101)
                 {
+                    
                     //建立连接
                     msg->writeData(buf + Head + 8, msg->dataSize);
                     Connect(msg, clientAddr);
                     __ModuleManager->PushMessageObj(msg);
+                }
+                else if(msg->MessageID == 102)
+                {
+                      //处理心跳包
+                       auto client = GetUdpClient(UDPClient::GetID(clientAddr));
+                        msg->writeData(buf + Head + 8, msg->dataSize);
+                    if (client == nullptr||client->State != CONNECTED)
+                    {
+                   
+                    }
+                    else{
+                        client->HeartTime = time(NULL);
+                        client->Send(102,(uint8*)&msg->data,12);
+                    }
+                      __ModuleManager->PushMessageObj(msg);
+
                 }
                 else
                 {
@@ -201,37 +218,48 @@ void UDPNetModule::Init()
   void UDPNetModule::RunHeartCheckThread()
   {
     Log(INFO,"正在初始化UDP心跳包检测线程");
-    for (auto it = ClientList.begin(); it != ClientList.end(); it++)
+    while (true)
     {
-        auto cp = it->second;
-        if(cp == nullptr)continue;
-        switch (cp->State)
-        {
-        case CONNECTING:
-            {
-                if(time(NULL) - cp->HeartTime < 3)continue;
-                 cp->State = DISCONNECTING;
-                  cp->HeartTime = time(NULL);
-            }
-            break;
-        case CONNECTED:
-            {
-                if(time(NULL) - cp->HeartTime < 10)continue;
-                cp->State = DISCONNECTING;
-                 cp->HeartTime = time(NULL);
-            }
-            break;    
-        case DISCONNECTING:
-            {
-                if(time(NULL) - cp->HeartTime < 3)continue;
-                CloseConnect(cp->UDPClientID);
-            }
-            break;    
-        default:
-            break;
-        }
+            cout << ClientObjPool.size() << "|" << ClientList.size() <<endl;
+               for (auto it = ClientList.begin(); it != ClientList.end(); it++)
+                {
+                    
+                    auto cp = it->second;
+                    if(cp == nullptr)continue;
+                    switch (cp->State)
+                    {
+                    case CONNECTING:
+                        {
+                            if(time(NULL) - cp->HeartTime < 3)break;
+                            cp->State = DISCONNECTING;
+                            cp->HeartTime = time(NULL);
+                        }
+                        break;
+                    case CONNECTED:
+                        {
+                            if(time(NULL) - cp->HeartTime < 10)break;
+                            cp->State = DISCONNECTING;
+                            cp->HeartTime = time(NULL);
+                        }
+                        break;    
+                    case DISCONNECTING:
+                        {
+                         
+                            if(time(NULL) - cp->HeartTime < 3)break;
+                     
+                            CloseConnect(cp->UDPClientID);
+                            
+                           
+                        }
+                        break;    
+                    default:
+                        break;
+                    }
+                }
+                this_thread::sleep_for(chrono::seconds(1));
     }
-    this_thread::sleep_for(chrono::seconds(1));
+    
+   
     
   }
 
@@ -246,32 +274,52 @@ void UDPNetModule::Connect(Message *msg, sockaddr_in clientAddr)
 
     case 1:
     {
-        auto newclientp = ClientObjPool.pop();
-        if (newclientp == nullptr)
+        UDPClient * newclientp = nullptr;
+        int ID = -1;
+        msg->readData(ID);
+        if(ClientList.count(UDPClient::GetID(clientAddr)) > 0)
         {
-            Log(ERROR, "创建udp客户端失败");
+            cout << "Exist Connect Client" << endl;
+            
+             newclientp = ClientList[UDPClient::GetID(clientAddr)];
+             if(newclientp->State == CONNECTED)break;
+             
         }
-        newclientp->Reset();
-        newclientp->clientAddr = clientAddr;
-        newclientp->UDPClientID = UDPClient::GetID(clientAddr);
-        newclientp->ServerSocket = ServerSocket;
-        newclientp->State = CONNECTING;
-        ClientList.emplace(newclientp->UDPClientID,newclientp);
+        else
+        {
+            cout << "Create Connect Client" << endl;
+            newclientp = ClientObjPool.pop();
+            if (newclientp == nullptr)
+            {
+                Log(ERROR, "创建udp客户端失败");
+            }
+            newclientp->Reset();
+            newclientp->clientAddr = clientAddr;
+            newclientp->UDPClientID = UDPClient::GetID(clientAddr);
+            newclientp->ServerSocket = ServerSocket;
+            newclientp->State = CONNECTING;
+            ClientList.emplace(newclientp->UDPClientID,newclientp);
+        }
+         if(newclientp == nullptr)break;
+
         
         //第二次握手
-        uint8 sendbuff[8];
+        uint8 sendbuff[12];
         memcpy(sendbuff,(uint8*)&newclientp->UDPClientID,8);
-        newclientp->Send(101,sendbuff,8);
+         memcpy(sendbuff+8,(uint8*)&ID,4);
+        newclientp->Send(101,sendbuff,12);
     }
     break;
     case 2:
     {
+  
         //第三次握手建立连接
-        int ClientID = -1;
+        long long ClientID = -1;
         msg->readData(ClientID);
         ClientID--;
         auto clientp = GetUdpClient(ClientID);
         if(clientp == nullptr)return ;
+        cout << "Connected Client " << clientp->UDPClientID << endl;
         clientp->State = CONNECTED;
     }
     break;
@@ -286,10 +334,12 @@ void UDPNetModule::Connect(Message *msg, sockaddr_in clientAddr)
 
 void  UDPNetModule::CloseConnect(long long ClientID)
 {
+ 
     auto cp = GetUdpClient(ClientID);
     if(cp == nullptr)return ;
-    cp->Reset();
+      cout << "close client  " << ClientID << endl; 
     ClientList.erase(ClientID);
+    cp->Reset();
     ClientObjPool.push(cp);
 }
 

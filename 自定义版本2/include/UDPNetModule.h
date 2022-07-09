@@ -84,6 +84,7 @@ private:
   void RunRecvThread();
   //开启心跳检测线程
   void RunHeartCheckThread();
+
   
   //接收数据 
   void RecvData();
@@ -110,7 +111,7 @@ public:
 
 
 
-  UDPClient* GetUdpClient(int ID);
+  UDPClient* GetUdpClient(long long ID);
 
 
 
