@@ -132,6 +132,7 @@ void UDPNetModule::RunRecvThread()
                     }
                     else
                     {
+                     
                     //写入数据给消息体
                      msg->writeData(client->UDPClientID);
                      msg->writeData(buf + Head + 8, msg->dataSize);
@@ -341,7 +342,17 @@ void  UDPNetModule::CloseConnect(long long ClientID)
     ClientList.erase(ClientID);
     cp->Reset();
     ClientObjPool.push(cp);
+
+      Message* msg = __ModuleManager->GetMessageObj();
+        msg->srcModuleID = this->ID;
+        msg->MessageID = 103;
+        msg->writeData(ClientID);
+        __ModuleManager->pushDataMessageQueue(msg);
+
 }
+
+
+uint8 SendBuffer[512];
 
 void UDPNetModule::parseMessage(Message *messagePtr)
 {
@@ -349,9 +360,26 @@ void UDPNetModule::parseMessage(Message *messagePtr)
         return;
     switch (messagePtr->MessageID)
     {
-    case 101:
+    case 100:
     {
-        
+       
+             long long UdpClieentID = -1;
+             int DataSize = 0;
+             int Head = 0;
+              messagePtr->readData(UdpClieentID);
+             messagePtr->readData(Head);
+             messagePtr->readData(DataSize);
+            
+              
+            
+
+             
+             if(DataSize >= 512)return;
+            
+             messagePtr->readData(SendBuffer,DataSize);
+             UDPClient* udpc = GetUdpClient(UdpClieentID);
+             if(udpc == nullptr)return ;
+              udpc->Send(Head,SendBuffer,DataSize);
     }
     break;
 

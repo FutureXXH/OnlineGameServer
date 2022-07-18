@@ -89,6 +89,8 @@ public:
 	bool readData( T& writedata);
 
 	bool readData(char *buffer,int size);
+
+	bool readData(uint8 *buffer,int size);
 };
 
 
@@ -135,7 +137,14 @@ inline bool Message::readData(char *buffer,int size)
 	return true;
 }
 
-
+inline bool Message::readData(uint8 *buffer,int size)
+{
+	if(Data_head+size > dataSize)return false;
+	
+    memcpy(buffer,data+Data_head,size);
+    Data_head += size;
+	return true;
+}
 
 
 #endif
