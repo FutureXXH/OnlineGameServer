@@ -91,14 +91,6 @@ ServerLuaLib.GetTime();
 
 利用信号量唤醒业务线程 避免一直循环
 
-
-
-### v1版服务器结构
-
-
-![TCP游戏服务器架构](https://user-images.githubusercontent.com/60800578/135739241-7277575f-26ab-4210-9521-9185c0da1b95.png)
-
-
 当前已包含简单的登录 注册功能
 
 配合DB服务器使用https://github.com/FutureXXH/DBSERVER
